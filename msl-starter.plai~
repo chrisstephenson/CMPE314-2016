@@ -16,11 +16,6 @@
     [msl-num (n) n]
     [msl-add (lhs rhs) (+ (eval lhs) (eval rhs))]))
 
-(test (eval (msl-num 7))  7)
-(test (eval (msl-add (msl-num 3) (msl-num 4)))  7)
-(test (eval (msl-add (msl-add (msl-num 3) (msl-num 4)) (msl-num 35)))  42)
-
-
 ;; parse s-expression -> msl
 ;; convert a quoted s expression into the equivalent msl form
 ;; examples
@@ -36,7 +31,3 @@
          [(+) (msl-add (parse (second sl)) (parse (third sl)))]
          [else (error 'parse "invalid list input")]))]
     [else (error 'parse "invalid input")]))
-
-(test (parse '7) (msl-num 7))
-(test (parse '(+ 3 4)) (msl-add (msl-num 3) (msl-num 4)))
-(test (parse '(+ (+ 3 4) 35)) (msl-add (msl-add (msl-num 3) (msl-num 4)) (msl-num 35)))

@@ -1,0 +1,84 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section{Lecture 01}
+What programs mean is not a trivial business.
+
+The code below is valid C and also valid Java.
+
+What value does the function/method \verb|haha| return?
+
+\begin{verbatim}
+ int funny (int a, int b) {
+     return a + 2 * b;
+ }
+ 
+ int haha() {
+     int c = 2;
+     return funny (c++, c++);
+  }
+\end{verbatim}
+
+What would the value of these expressions be in Java and in Python and in PHP?
+\begin{verbatim}
+ 1000000000 + 2000000000
+ "1000000000" + "2000000000"
+\end{verbatim}
+
+
+
+\section*{Primary Textbooks}
+\begin{itemize}
+
+
+\item Shriram Krishnamurthi \emph{Programming Languages: Application and Interpretation} Author's web site  second edition. 
+
+\url{http://cs.brown.edu/courses/cs173/2012/book/} (primary text)
+
+\item Daniel P. Friedman and Mitchell Wand, \emph{Essentials of Programming Languages}, 3rd Edition MIT Press 2008
+\end{itemize}
+
+
+\subsection*{Background reading}
+\begin{itemize}
+
+\item Harold Abelson, Gerald Jay Sussman, Julie Sussman 
+\emph{Structure and Interpretation of Computer Programs}
+Second edition, MIT Press 2001
+
+Available on-line at 
+
+\url{http://mitpress.mit.edu/sicp/full-text/book/book.html}
+
+\item Scott Chacon and Ben Straub \emph{Pro Git}
+Available on-line at 
+
+\url{http://git-scm.com/book/en/v2}
+\item Barendregdt \emph{A Short Guide to the $\lambda$-calculus}.  
+I have uploaded a copy to online.bilgi.edu.tr
+
+\item \emph{Why Undergraduates Should Learn the Principles of
+Programming Languages} online at
+
+\url{http://www.cs.pomona.edu/~kim/why.pdf}
+
+\end{itemize}
+
+
+\section*{Video}
+A complete set of video lectures for a previous version of this course is available at
+
+\url{https://vimeo.com/album/1987162}
+
+
+\noindent{\copyright{Chris Stephenson 2016}}
+
+\end{document}

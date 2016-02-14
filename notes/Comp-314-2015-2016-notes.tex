@@ -1,21 +1,20 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
 
 \title{CMPE314 Notes Week1}
 \date{February 2016}
 
-\documentclass{article}
-\usepackage[margin=2cm,bottom=2cm]{geometry}
-\usepackage{hyperref}
-\usepackage{comment}
-\usepackage[utf8]{inputenc}
 
-\setlength{\parskip}{1em}
 \begin{document}
 
 \maketitle
 
 \section{Lecture 01}
+\subsubsection*{Quiz Question 1 answer:}
     
 \begin{itemize}
 
@@ -36,7 +35,7 @@
     
         Alphabet: [a]
     
-        S  --  a
+        S  $\rightarrow$  a
     
         Language: Set consisted of a.
         
@@ -44,13 +43,13 @@
         
         Alphabet: [+, *, (), number]
         
-        S -- number
+        S  $\rightarrow$ number
         
-        S -- S+S 
+        S  $\rightarrow$ S+S 
         
-        S -- S*S
+        S  $\rightarrow$ S*S
         
-        S-- (S)
+        S $\rightarrow$ (S)
         
         Push down automaton can recognize this language.
         
@@ -59,7 +58,7 @@
         
 \end{itemize}
 
-\textbf{Quiz Question 2 answer:}
+\subsubsection*{Quiz Question 2 answer:}
 
 \begin{verbatim}
     (define (interp [a : ArithC]) : number
@@ -82,6 +81,8 @@ What programs mean is not a trivial business.
 The code below is valid C and also valid Java.
 
 What value does the function/method \verb|haha| return?
+%\end{flushleft}
+
 
 \begin{verbatim}
  int funny (int a, int b) {
@@ -94,13 +95,11 @@ What value does the function/method \verb|haha| return?
  }
 \end{verbatim}
 
-<<<<<<< HEAD
 What would the value of these expressions be in Java and in Python and in PHP? Or any other language?
 =======
 Returned value in Java is 8,while in C it is 7.
 
 What would the value of these expressions be in Java and in Python and in PHP?
->>>>>>> 3f9e1719aff6dce92c0902039dfb9ad413ffd3ec
 \begin{verbatim}
  1000000000 + 2000000000
  "1000000000" + "2000000000"
@@ -135,11 +134,11 @@ The Manchester Small-Scale Experimental Machine (SSEM), nicknamed Baby, was the 
 \noindent
 At that time for opening the computer small binary code was manually, nowadays it is not needed since there is ROM memory. Processor is fixed to jump to a fixed memory address, that is how it starts. 
                 
-Program Text ---- Data Structure(CANONICAL FORM) ----- Answer 
+Program Text  $\rightarrow$ $\rightarrow$ Data Structure(CANONICAL FORM)  $\rightarrow$ $\rightarrow$- Answer 
 
 Program Text is \textbf{parsed} into a Data structure, and Data Structure is \textbf{interpreted} into answer. The focus of this course will be more on the second part of the process interpreting Data Structure.
 
-\end{flushleftffff}
+\end{flushleft}
 
 
 \section*{Primary Textbooks}

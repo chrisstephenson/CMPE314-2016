@@ -1,15 +1,82 @@
 \documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{CMPE314 Notes Week1}
+\date{February 2016}
+
+\documentclass{article}
 \usepackage[margin=2cm,bottom=2cm]{geometry}
 \usepackage{hyperref}
 \usepackage{comment}
 \usepackage[utf8]{inputenc}
 
+\setlength{\parskip}{1em}
 \begin{document}
-\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
-\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+
 \maketitle
 
 \section{Lecture 01}
+    
+\begin{itemize}
+
+\item  Language: 
+    \begin{itemize}
+        \item A finite alphabet.
+        \item A set of strings of the symbols in the alphabet. (Usually infinite)
+
+    \end{itemize}
+
+\item Grammar:
+    \begin{itemize}
+        \item A finite alphabet of terminal symbols.
+        \item A finite set of non-terminal symbols.
+        \item  A set of productions (rewriting rules).
+        \item Contains a sentence symbol S. (start)
+        \item Simple Grammar example: 
+    
+        Alphabet: [a]
+    
+        S  --  a
+    
+        Language: Set consisted of a.
+        
+        \item Quiz 01 grammar corresponding to the Quiz Question 1
+        
+        Alphabet: [+, *, (), number]
+        
+        S -- number
+        
+        S -- S+S 
+        
+        S -- S*S
+        
+        S-- (S)
+        
+        Push down automaton can recognize this language.
+        
+        
+        \end{itemize}
+        
+\end{itemize}
+
+\textbf{Quiz Question 2 answer:}
+
+\begin{verbatim}
+    (define (interp [a : ArithC]) : number
+        (type-case ArithC a
+            [numC (n) n]
+            [plusC (l r) (+ (interp l) (interp r))]
+            [multC (l r) (* (interp l) (interp r))]))
+
+\end{verbatim}
+Reason that \textbf{numC-n} which was previously written instead of \textbf{interp} is that \textbf{l} or
+\textbf{r} corresponding to the \textbf{plusC} or \textbf{mulC} do not have necessarily to be of the \textbf{numC}
+type, instead they can be another \textbf{plusC} or  \textbf{mulC} themselves meaning that \textbf{interp} should
+be recursively called for both \textbf{l} and \textbf{r}.
+
+Ex: (+ (* 3 7) (+ 4 2))
+
+\begin{flushleft}
 What programs mean is not a trivial business.
 
 The code below is valid C and also valid Java.
@@ -27,12 +94,48 @@ What value does the function/method \verb|haha| return?
   }
 \end{verbatim}
 
+Returned value in Java is 8,while in C it is 7.
+
 What would the value of these expressions be in Java and in Python and in PHP?
 \begin{verbatim}
  1000000000 + 2000000000
  "1000000000" + "2000000000"
 \end{verbatim}
 
+Since java takes the first line as integers the sum of these two numbers would be too big for what Java's int can take, therefore the answer would be some negative number.
+
+Racket for example can do this operation and would return the result as 3000000000.
+
+
+The second line Java sees as a string therefore the result would be an concatenated string "10000000002000000000".
+
+On the other hand some languages would calculate the second line as 3000000000.
+\setlength{\parindent}{10ex}
+
+\par Interesting fast about languages is that they do have Syntactic Sugar (decoration of language). An simple example of it is a dowhile loop in Java, there is nothing new that it brings to Java, nothing that while or for loop can no do. Taking this out of Java syntax would be called \textbf{desugaring}.
+
+\noindent
+Similar is with OR AND and NOT gates in circuits. For ex.: while NAND (AND + NOT) is an complete sent and with combination of few And gates the function of the XOR can be performed. Meaning that in this case XOR gate is a syntactic sugar.
+
+All programming languages are data formats for data input to other programs.
+
+\noindent
+Ex: \textbf{Java code} is input for \textbf{compiler} (which is program itself) and it produces a ByteCode (which is program again) and it is input for JVM (which is program itself) and so on...
+
+\noindent
+If this is the case, where does this process end ? 
+
+\noindent
+The Manchester Small-Scale Experimental Machine (SSEM), nicknamed Baby, was the world's first stored-program computer. It was built at the Victoria University of Manchester, England, by Frederic C. Williams, Tom Kilburn and Geoff Tootill, and ran its first program on 21 June 1948.
+
+\noindent
+At that time for opening the computer small binary code was manually, nowadays it is not needed since there is ROM memory. Processor is fixed to jump to a fixed memory address, that is how it starts. 
+                
+Program Text ---- Data Structure(CANONICAL FORM) ----- Answer 
+
+Program Text is \textbf{parsed} into a Data structure, and Data Structure is \textbf{interpreted} into answer. The focus of this course will be more on the second part of the process interpreting Data Structure.
+
+\end{flushleftffff}
 
 
 \section*{Primary Textbooks}

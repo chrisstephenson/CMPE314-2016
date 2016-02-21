@@ -1,0 +1,235 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\graphicspath{ {bootstrapping.png} }
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+
+\section*{Answers of the quiz \#1}
+\subsection*{Question \#1}
+\subsubsection*{Language}
+  \begin{itemize}
+        \item A finite alphabet
+        \item A set of strings of the symbols in the alphabet (usually infinitive)
+   \end{itemize}
+ 
+\subsubsection*{Grammar}
+  \begin{itemize}
+   \item A set of productions (rewriting rules)
+   \item A finite alphabet of terminal symbols
+   \item A finite set of non-terminal symbols
+   \item A sentence symbol ( S )
+  \end{itemize}
+
+Simple language: [a] 
+  \begin{itemize}
+   \item $S \rightarrow a$
+   \item $S \rightarrow aS$ (infinite)
+   
+   $S \rightarrow number$\newline
+   $S \rightarrow S + S$\newline
+   $S \rightarrow S * S$\newline
+   $S \rightarrow (S)$\newline
+   alphabet = [+, *, (), number]
+   
+   Push down automaton can recognize this language.
+  \end{itemize}
+  
+
+\subsection*{Question \#2}
+
+  \begin{verbatim}
+    (define (interp [a : ArithC]) : number
+        (type-case ArithC a
+            [numC (n) n]
+            [plusC (l r) (+ (numC-n l) (numC-n r))]
+            [multC (l r) (* (numC-n l) (numC-n r))]))
+  \end{verbatim}
+
+  \begin{verbatim}
+    (define (interp [a : ArithC]) : number
+        (type-case ArithC a
+            [numC (n) n]
+            [plusC (l r) (+ (interp l) (interp r))]
+            [multC (l r) (* (interp l) (interp r))]))
+  \end{verbatim}
+    
+  \begin{verbatim}
+    In this code;
+    (+ 4 3) works but,
+    (+ (* 3 7) (+ 4 2)) crashes
+  \end{verbatim}
+  
+Reason that \textbf{numC-n} which was previously written instead of \textbf{interp} is that \textbf{l} or
+\textbf{r} corresponding to the \textbf{plusC} or \textbf{mulC} do not have necessarily to be of the \textbf{numC}
+type, instead they can be another \textbf{plusC} or  \textbf{mulC} themselves meaning that \textbf{interp} should
+be recursively called for both \textbf{l} and \textbf{r}.
+
+
+
+
+  
+\section*{Programming Languages}
+\begin{tabular}{c c}
+ \textbf{Programming Languages} & \textbf{Kinds of Programming Languages}\\
+ \begin{tabular}{ l c r }
+    Java & Assembly & Swift \\
+    Python & C & Prolog \\
+    Ruby & C\# & Fortran \\
+    Objective-C & Racket & R \\
+    Lisp & Haskell & Whitespace \\
+    Javascript & Pascal & Giuseppe \\
+    Scala & HTML & Ada \\
+    Pick & Perl & XML \\
+    SQL & BASH & XSDL \\
+    Scratch &  &  \\
+  \end{tabular}
+  &
+  \begin{tabular}{ c }
+    Markup Language \\
+    Functional \\
+    Object oriented \\
+    Procedural \\
+    Scripting \\
+    Graphical \\
+    Experimental \\
+    Declarative \\
+    Machine \\
+  \end{tabular}
+\end{tabular}
+
+
+\begin{flushleft}
+The code below is valid in Java and also valid in C. \\
+What value does the function/method \verb|funny2| returns?
+
+\begin{verbatim}
+ int funny(int a, int b){
+    return a + 2 * b;
+ }
+ 
+ int funny2(){
+    int a = 2;
+    return funny(a++, a++);
+ }
+\end{verbatim}
+
+
+What would the value of these expressions be in Java and in Python and in PHP? Or any other language?
+In this example the value returned in Java and C are different. Java returns 8 but C returns 7.\\
+This situation caused by the compilers of this languages. In \verb|funny(a++, a++)| statement Java starts from left \verb|a++| but C starts from right \verb|a++|.\linebreak
+
+
+\begin{verbatim}
+ 1000000000 + 2000000000
+ "1000000000" + "2000000000"
+\end{verbatim}
+
+In the first example Java returns a negative integer value. Because java takes the first line as integers the sum of these two numbers would be too big for what Java's int can takem.(aximum int value is 2,147,483,647).\\
+
+Racket for example can do this operation and would return the result as 3000000000.
+
+
+The second line Java sees as a string therefore the result would be an concatenated string "10000000002000000000".
+
+On the other hand some languages would calculate the second line as 3000000000.
+
+
+
+
+\setlength{\parindent}{10ex}
+
+
+
+
+\par Interesting fact about languages is that they do have Syntactic Sugar (decoration of language). An simple example of it is a dowhile loop in Java, there is nothing new that it brings to Java, nothing that while or for loop can no do. Taking this out of Java syntax would be called \textbf{desugaring}.
+
+\noindent
+Similar is with OR AND and NOT gates in circuits. For ex.: while NAND (AND + NOT) is an complete sent and with combination of few And gates the function of the XOR can be performed. Meaning that in this case XOR gate is a syntactic sugar.
+
+
+
+\noindent
+Ex: \textbf{Java code} is input for \textbf{compiler} (which is program itself) and it produces a ByteCode (which is program again) and it is input for JVM (which is program itself) and so on...
+
+\noindent
+If this is the case, where does this process end ? 
+
+\noindent
+The Manchester Small-Scale Experimental Machine (SSEM), nicknamed Baby, was the world's first stored-program computer. It was built at the Victoria University of Manchester, England, by Frederic C. Williams, Tom Kilburn and Geoff Tootill, and ran its first program on 21 June 1948.
+
+\noindent
+At that time for opening the computer small binary code was manually, nowadays it is not needed since there is ROM memory. Processor is fixed to jump to a fixed memory address, that is how it starts. 
+                
+Program Text  $\rightarrow$ $\rightarrow$ Data Structure(CANONICAL FORM)  $\rightarrow$ $\rightarrow$- Answer 
+
+Program Text is \textbf{parsed} into a Data structure, and Data Structure is \textbf{interpreted} into answer. The focus of this course will be more on the second part of the process interpreting Data Structure.
+
+
+\center{Program text $\xrightarrow{parse}$ Data Structure $\xrightarrow{interp/eval}$ Answer}\\
+\begin{verbatim}
+ (eval (parse '(+ 2 (* 3 4))))
+\end{verbatim}
+Parsing is common to all compilers/interpreters
+
+
+\end{flushleft}
+
+
+\section*{Primary Textbooks}
+\begin{itemize}
+
+
+\item Shriram Krishnamurthi \emph{Programming Languages: Application and Interpretation} Author's web site  second edition. 
+
+\url{http://cs.brown.edu/courses/cs173/2012/book/} (primary text)
+
+\item Daniel P. Friedman and Mitchell Wand, \emph{Essentials of Programming Languages}, 3rd Edition MIT Press 2008
+\end{itemize}
+
+
+\subsection*{Background reading}
+\begin{itemize}
+
+\item Harold Abelson, Gerald Jay Sussman, Julie Sussman 
+\emph{Structure and Interpretation of Computer Programs}
+Second edition, MIT Press 2001
+
+Available on-line at 
+
+\url{http://mitpress.mit.edu/sicp/full-text/book/book.html}
+
+\item Scott Chacon and Ben Straub \emph{Pro Git}
+Available on-line at 
+
+\url{http://git-scm.com/book/en/v2}
+\item Barendregdt \emph{A Short Guide to the $\lambda$-calculus}.  
+I have uploaded a copy to online.bilgi.edu.tr
+
+\item \emph{Why Undergraduates Should Learn the Principles of
+Programming Languages} online at
+
+\url{http://www.cs.pomona.edu/~kim/why.pdf}
+
+\end{itemize}
+
+
+\section*{Video}
+A complete set of video lectures for a previous version of this course is available at
+
+\url{https://vimeo.com/album/1987162}
+
+
+\noindent{\copyright{Chris Stephenson 2016}}
+
+\end{document}

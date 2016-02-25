@@ -1,0 +1,5 @@
+cat funnypre.java funnyhaha funnypost.java > Funny.java
+javac Funny.java
+java Funny
+
+

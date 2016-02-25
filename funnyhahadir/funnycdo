@@ -1,0 +1,4 @@
+cat funnypre.c funnyhaha funnypost.c > funny.c
+gcc funny.c -o funny
+./funny
+

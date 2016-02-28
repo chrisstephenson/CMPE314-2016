@@ -1,0 +1,166 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{MnSymbol}
+\usepackage{tikz}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+ 
+\begin{flushleft}
+\section*{A program that looks the same but evaluates to two different answers should worry us!}
+The following function/method is both works on Java and C, but when we compile it gives different results.
+\begin{verbatim}
+int funny (int a, int b){
+  return a * 2 + b;
+}
+
+int haha () {
+  int z = 2;
+  return funny (z++, z++);
+}
+\end{verbatim}
+This method/function is legit for both languages.\\
+\bigskip
+In C, we can compile it with one easy step. For this, we need to add C header files and main function.
+\begin{verbatim}
+#include<stdio.h>
+
+int funny (int a, int b){
+  return a * 2 + b;
+}
+
+int haha () {
+  int z = 2;
+  return funny (z++, z++);
+}
+
+int main(int argc, char** argv) {
+  printf("\n\nThe answer in C is %d\n\n", haha());
+  return 0;
+}
+\end{verbatim}
+The output of the program is:\\
+\verb|The answer in C is 8|\\
+\bigskip
+In Java we need to change the methods a little bit. We should add static at the beginning of the methods in order to compile.\\
+We can do this without changing the main file via terminal.\\
+\begin{verbatim}
+ cat funnypre.java | cat - funnyhaha | sed -e 's/^int/static int/g' | cat - funnypost.java
+\end{verbatim}
+(The files are in the course github repository.)\\
+\pagebreak
+Output of the code is:
+\begin{verbatim}
+class Funny{
+
+static int funny (int a, int b){
+  return a * 2 + b;
+}
+
+static int haha () {
+  int z = 2;
+  return funny (z++, z++);
+} 
+
+public static void main(String[] args){
+  System.out.println("\n\nThe answer in Java is " + haha() + "\n\n");
+}
+
+}
+\end{verbatim}
+The output of the program is:\\
+\verb|The answer in Java is 7|\\
+\bigskip
+We can write and compile codes without using Eclipse.\\
+Integrated Development Environment (IDE) $ \rightarrow $ Eclipse\\
+Unintegrated Development Environment $ \rightarrow $ Terminal\\
+\bigskip
+For repetitive jobs we should write bash scripts.\\
+Example for C:
+\begin{verbatim}
+cat funnypre.c funnyhaha funnypost.c > funny.c
+gcc funny.c -o funny
+./funny
+\end{verbatim}
+
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\bigskip
+\textbf{z++}\\
+\bigskip
+The \verb|++| post operator produces a value the same as the value of its operand. But it changes the subsequent value of the operand as a \underline{side effect.}\\ 
+In a program using a for loop to process an array we have (maybe) unnecessary state.\\
+Look at Hadoop - Map reduce $ \leftarrow $ must be stateless (big data)\\
+\bigskip
+\centerline{text $\xrightarrow{parse}$ first representation $\xrightarrow{desugar}$ second representation $\xrightarrow{eval}$ evaluation}
+\centerline{"desugaring" = "macro processing"}
+\bigskip
+For example in Racket, cond is desugared into a series of nested if statements.\\
+\bigskip
+What does our program evaluation look like?
+\begin{verbatim}
+ (eval (desugar (parse '(* (-3) (+ 7 8)))))
+\end{verbatim}
+
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\pagebreak
+\textbf{Rules:}\\
+$\lambda \rightarrow \mathit{v}$  identifier\\
+$\lambda \rightarrow ( \lambda \mathit{v} \Lambda )$ anonymous function definition\\
+$\lambda \rightarrow ( \Lambda \Lambda )$ function application \\
+
+\bigskip
+$( \mathit{a} $ $ ( \mathit{b}$ $ \mathit{c} ))$ \checkmark\\
+$\mathit{a}$ \checkmark\\
+$(\mathit{a})$ x \\
+$(\mathit{a}$ $\mathit{b})$ \checkmark\\
+
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\bigskip
+$(\lambda$ $\mathit{x}$ $\mathit{x}) \rightarrow$ identity function$$$$
+\begin{verbatim}
+int funny(int y){
+  return y;
+}
+\end{verbatim}
+$((\lambda$ $\mathit{x}$ $\mathit{x})$ $(\mathit{a}$ $\mathit{b}))$\\
+In here x is bound, a and b are free\\
+\bigskip
+A "complete" program will have no "free" identifiers.\\
+A part of that program may have free identifiers.\\
+
+\begin{itemize}
+ \item If $\mathit{M}$ is an identifier, $\mathit{x}$. $\mathit{FI(M) = {X}}$
+ \item If $\mathit{M}$ is an application $(\mathit{M1}$ $ \mathit{M2})$. $\mathit{FI(M) = FI(M1) \cup FI(M2)}$
+ \item If $\mathit{M}$ is a definition $(\lambda$ $\mathit{x}$ $\mathit{M1})$. $\mathit{FI(M1) - }$ \{$\mathit{x}$\}
+\end{itemize} 
+\bigskip
+$\mathit{FI[(\lambda x \space{} (\lambda \space{} y \space{} x ))] = \{\}}$\\
+$\mathit{FI[(\lambda y x)] = \{x\}}$
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\bigskip
+\textbf{If statement}\\
+True:\\
+$\mathit{T = (\lambda x (\lambda y x))}$\\
+$\mathit{(T \space{} a) \xrightarrow{\beta} (\lambda \space{} y \space{} a)}$\\
+$\mathit{((T \space{} a) \space{} b) \xrightarrow{\beta} a}$\\
+\bigskip
+False:\\
+$\mathit{F = (\lambda \space{} x \space{} (\lambda \space{} y \space{} y))}$\\
+$\mathit{((F a) b) \xrightarrow{\beta} b}$
+
+\end{flushleft}
+
+ 
+\end{document}

@@ -1,0 +1,138 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\date{February,26}
+\maketitle
+
+\subsubsection*{A program that looks the same but evaluates to two different answers answers should worry us.}
+  \begin{itemize}
+        \item "Integrated Development Environment"
+		\item "Unintegrated Development Environment"
+   \end{itemize}
+
+
+\begin{verbatim} 
+ int funny(int a, int b){ 
+  return 2 * a + b;
+ }
+ 
+ int haha(){
+  int z = 2;
+  return funny(z++, z++);
+}
+\end{verbatim}
+%
+
+\center z++ $\rightarrow$ side effect\
+ 
+\begin{flushleft}
+The ++ post operator produces a value the same as the value of its operand. But it changes the subsequent value of the operand as a \emph{\color{red} side effect //alligator}\\
+\end{flushleft}
+
+\begin{flushleft}
+In a program using a for loop to process an array we have unnecessary(maybe) stale.
+\end{flushleft}
+
+\begin{flushleft}
+Look at Hodoop(big data) $\rightharpoonup$ map reduce (must be stateless)
+\end{flushleft}\
+
+\center text(parse)$\rightarrow$ first rep(desugar)$\rightarrow$ second rep(eval)$\rightarrow$ evaluation\
+
+
+\center "desugaring" = "macro processing"\
+
+\begin{flushleft}
+Example:
+\end{flushleft}
+
+\begin{flushleft}
+In Racket, cond is designed into a series of nested if statements.\\
+What does our program evaluation look like ?
+$(eval(desugar(parse '(* (-3)(+ 7 8)))))$
+\end{flushleft}
+
+
+\begin{flushleft}
+The syntax of the $\lambda$-calculus (my idiosyncrotic version)
+\end{flushleft}
+
+\begin{flushleft}
+\center
+$\Lambda\rightarrow\upsilon$\
+\center
+$\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)$\
+\center
+$\Lambda\rightarrow(\Lambda$
+$\Lambda)$
+\
+\end{flushleft}
+
+\begin{flushleft}
+\subsubsection*{Informal meaning}
+\end{flushleft}
+\begin{flushleft}
+
+$\Lambda\rightarrow\upsilon\Longrightarrow$identifier
+
+$\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)\Longrightarrow$anonymous function definition
+
+$\Lambda\rightarrow(\Lambda$
+$\Lambda)\Longrightarrow$function application
+\end{flushleft}
+
+
+\begin{verbatim} 
+ int funny(int y){ 
+  return y;
+ } 
+\end{verbatim}
+%
+\begin{flushleft}
+(($\Lambda$ x x)(a b)) // x is bond and a,b are free
+\end{flushleft}
+
+\begin{flushleft}
+A "complete" program will have no "free" identifiers\\
+A part of that program may have free identifiers
+\end{flushleft}
+
+\begin{flushleft}
+If M is an identifier, x $FI(M)={x}$\\
+If M is an application (M1,M2) $FI(M)=FI(M1) U FI(M2)$\\
+If M is an definition ($\Lambda$ x M1)
+\end{flushleft}
+
+\begin{flushleft}
+FI[($\lambda$ x ($\lambda$ y x)]={}\\
+FI[($\lambda$ y x)]={x}
+\end{flushleft}
+
+
+\begin{flushleft}
+\subsubsection*{Informally}
+T= ($\lambda$ x ($\lambda$ y x)) \\
+(T a) $\rightarrow$ ($\lambda$ y a) // direction with $\beta$\\
+((T a) b) $\rightarrow$ a // direction with $\beta$
+\end{flushleft}
+
+\begin{flushleft}
+F=($\lambda$ x ($\lambda$ y y))\\
+((F a) b) $\rightarrow$ b // direction with $\beta$
+\end{flushleft}\
+
+\end{document}

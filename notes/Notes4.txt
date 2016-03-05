@@ -1,0 +1,201 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{minted}
+\usepackage{blindtext}
+
+\title{CMPE314 Notes Week4}
+\date{March 2016}
+
+
+\begin{document}
+
+\maketitle
+
+\section*{\Large Lecture 04}
+\subsubsection*{\large Lies and Equality in Java and other languages}
+
+\vspace{7mm} 
+
+\textbf{Lies}
+
+\vspace{5mm} 
+
+\textbf{"="} does not mean \textbf{"equals"}  (means assignment)
+
+\vspace{1mm} 
+
+\textbf{" \& "} does not mean \textbf{"and"}     (means bitwise and)
+
+\vspace{1mm} 
+
+\textbf{"\textbar "} does not mean\textbf{ "or"}     (means bitwise or)
+
+\vspace{1mm} 
+
+\textbf{"!"} does not mean \textbf{"surprise"}     
+
+\vspace{1mm} 
+
+\textbf{int} does not mean \textbf{integer} 
+
+\vspace{1mm} 
+
+\textbf{Integer} does not mean \textbf{Integer} 
+
+\vspace{1mm} 
+
+\textbf{BigInteger} does not mean \textbf{"BigInteger} (performing arithemtic operations properly is not possible)
+
+\vspace{5mm} 
+
+C was invented as a high language assembler, not as a high level language. Things written above are leftover from C (to Java).
+
+\vspace{5mm}
+
+In Java we use :
+
+" == " for equals
+
+
+" \&\& " for and 
+
+
+" \textbar\textbar " for or 
+
+\vspace{5mm} 
+
+int means a 32 bit complement quantity (now most computers are 64 bit which makes a huge problem to arise) In Java they are not able to enlarge the size of integer because many applications used today would collapse)
+
+\vspace{2mm} 
+
+Fortunately this problem has been resolved in Python.
+
+
+\vspace{5mm} 
+
+If Ideclare MyClass a;
+
+\hspace{1cm}a is not necessarily and object of class MyClass
+
+\vspace{2mm}
+
+Java is essentially broke.
+
+Null pointer exception is something we see million times and it causes program to collapse.
+
+In Java things go wrong at run time not compile time. You can not access null thing.
+
+\vspace{7mm} 
+
+
+\textbf{Equality}
+
+\vspace{7mm} 
+
+If you have a choice do not use Java. It was designed to do what JavaScript does today. Java does all to avoid program to collapse.
+
+\vspace{5mm} 
+
+What does "==" mean in Java?    Does not necessarily mean equal in value!
+
+\newpage
+
+Examples in Java:
+
+\begin{minted}{java}
+
+class MyInteger {
+  int value;
+  MyInteger (int v) {
+    value = v;
+  }
+
+  public String toString () {
+    return "" + value;
+  }
+
+  public void setV (int v) {
+    value = v;
+  }
+
+}
+
+class Equality {
+
+public static void main (String[] args) {
+  MyInteger a = new MyInteger(42);
+  MyInteger b = new MyInteger(42);
+  MyInteger c = new MyInteger(43);
+  MyInteger d = c;
+  String s1 = "Chris";
+  String s2 = "Chris";
+  System.out.println("\n a = " + a + ",b = " + b + "\n");
+  System.out.println("\n a == b is " + (a == b) + "\n");
+  System.out.println("\n s1 == s2 is " + (s1 == s2) + "\n");
+  System.out.println("\nd = " + d + "\n");
+  System.out.println("\n c == d is " + (c == d) + "\n");
+  c.setV(44);
+  System.out.println("\n c = " + c +  "\n");
+}
+
+
+}
+\end{minted}
+
+\vspace{3mm} 
+
+\textbf{Output:}
+
+\vspace{1mm} 
+
+a = 42,b = 42
+
+
+ a == b is false
+
+
+ s1 == s2 is true
+
+
+d = 43
+
+
+ c == d is true
+
+
+ c = 44
+
+\vspace{3mm} 
+
+It turns that "==" is also a lie. :)
+
+\vspace{1mm} 
+
+We would not see this problem in a normal Racket program. This problem does not arise.
+
+\vspace{3mm} 
+
+In a case where we compare \textbf{a == b} the output we get is \textbf{false}. But if we compare two strings \textbf{s1 == s2} what we get as an output is \textbf{true}. Reason for this is that String in Java are \textbf{Immutable}.
+
+\vspace{3mm} 
+
+Another bad thing going on is that even we said that d = c in the Equality class, and after we checked if d == c and got the answer that it is true. Once we set the value of c to 44, d and c become equal later on, but previously output of the d value was 43, which means even after we set the value of c again, c and d become equal again but they are not equal at lest at one point of time. (Reason is mutability.)
+
+\vspace{3mm} 
+
+\textbf{The best way to solve this problem in Java is to make your programs immutable.}
+
+\vspace{3mm}
+
+"Immutable objects have a very compelling list of positive qualities.Without question they are among simplest and most robust classes you can possibly build. When you create immutable class, entire categories of problems simply disapear."
+
+\url{http://www.javapractices.com/topic/TopicAction.do?Id=29}
+
+
+
+
+\end{document}

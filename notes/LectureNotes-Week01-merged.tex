@@ -1,111 +1,141 @@
 \documentclass{article}
-\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
 \usepackage{hyperref}
 \usepackage{comment}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\graphicspath{ {bootstrapping.png} }
 
-\title{CMPE314 Notes Week1}
-\date{February 2016}
-
+\newcommand\tab[1][1cm]{\hspace*{#1}}
 
 \begin{document}
-
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
 \maketitle
 
-\section{Lecture 01}
-\subsubsection*{Quiz Question 1 answer:}
-    
-\begin{itemize}
 
-\item  Language: 
-    \begin{itemize}
-        \item A finite alphabet.
-        \item A set of strings of the symbols in the alphabet. (Usually infinite)
+\section*{Answers of the quiz \#1}
+\subsection*{Question \#1}
+\subsubsection*{Language}
+  \begin{itemize}
+        \item A finite alphabet
+        \item A set of strings of the symbols in the alphabet (usually infinitive)
+   \end{itemize}
+ 
+\subsubsection*{Grammar}
+  \begin{itemize}
+   \item A set of productions (rewriting rules)
+   \item A finite alphabet of terminal symbols
+   \item A finite set of non-terminal symbols
+   \item A sentence symbol ( S )
+  \end{itemize}
 
-    \end{itemize}
+Simple language: [a] 
+  \begin{itemize}
+   \item $S \rightarrow a$
+   \item $S \rightarrow aS$ (infinite)
+   
+   $S \rightarrow number$\newline
+   $S \rightarrow S + S$\newline
+   $S \rightarrow S * S$\newline
+   $S \rightarrow (S)$\newline
+   alphabet = [+, *, (), number]
+   
+   Push down automaton can recognize this language.
+  \end{itemize}
+  
 
-\item Grammar:
-    \begin{itemize}
-        \item A finite alphabet of terminal symbols.
-        \item A finite set of non-terminal symbols.
-        \item  A set of productions (rewriting rules).
-        \item Contains a sentence symbol S. (start)
-        \item Simple Grammar example: 
-    
-        Alphabet: [a]
-    
-        S  $\rightarrow$  a
-    
-        Language: Set consisted of a.
-        
-        \item Quiz 01 grammar corresponding to the Quiz Question 1
-        
-        Alphabet: [+, *, (), number]
-        
-        S  $\rightarrow$ number
-        
-        S  $\rightarrow$ S+S 
-        
-        S  $\rightarrow$ S*S
-        
-        S $\rightarrow$ (S)
-        
-        Push down automaton can recognize this language.
-        
-        
-        \end{itemize}
-        
-\end{itemize}
+\subsection*{Question \#2}
 
-\subsubsection*{Quiz Question 2 answer:}
+  \begin{verbatim}
+    (define (interp [a : ArithC]) : number
+        (type-case ArithC a
+            [numC (n) n]
+            [plusC (l r) (+ (numC-n l) (numC-n r))]
+            [multC (l r) (* (numC-n l) (numC-n r))]))
+  \end{verbatim}
 
-\begin{verbatim}
+  \begin{verbatim}
     (define (interp [a : ArithC]) : number
         (type-case ArithC a
             [numC (n) n]
             [plusC (l r) (+ (interp l) (interp r))]
             [multC (l r) (* (interp l) (interp r))]))
-
-\end{verbatim}
+  \end{verbatim}
+    
+  \begin{verbatim}
+    In this code;
+    (+ 4 3) works but,
+    (+ (* 3 7) (+ 4 2)) crashes
+  \end{verbatim}
+  
 Reason that \textbf{numC-n} which was previously written instead of \textbf{interp} is that \textbf{l} or
 \textbf{r} corresponding to the \textbf{plusC} or \textbf{mulC} do not have necessarily to be of the \textbf{numC}
 type, instead they can be another \textbf{plusC} or  \textbf{mulC} themselves meaning that \textbf{interp} should
 be recursively called for both \textbf{l} and \textbf{r}.
 
-Ex: (+ (* 3 7) (+ 4 2))
+
+
+
+  
+\section*{Programming Languages}
+\begin{tabular}{c c}
+ \textbf{Programming Languages} & \textbf{Kinds of Programming Languages}\\
+ \begin{tabular}{ l c r }
+    Java & Assembly & Swift \\
+    Python & C & Prolog \\
+    Ruby & C\# & Fortran \\
+    Objective-C & Racket & R \\
+    Lisp & Haskell & Whitespace \\
+    Javascript & Pascal & Giuseppe \\
+    Scala & HTML & Ada \\
+    Pick & Perl & XML \\
+    SQL & BASH & XSDL \\
+    Scratch &  &  \\
+  \end{tabular}
+  &
+  \begin{tabular}{ c }
+    Markup Language \\
+    Functional \\
+    Object oriented \\
+    Procedural \\
+    Scripting \\
+    Graphical \\
+    Experimental \\
+    Declarative \\
+    Machine \\
+  \end{tabular}
+\end{tabular}
+
 
 \begin{flushleft}
-What programs mean is not a trivial business.
-
-The code below is valid C and also valid Java.
-
-What value does the function/method \verb|haha| return?
-%\end{flushleft}
-
+The code below is valid in Java and also valid in C. \\
+What value does the function/method \verb|funny2| returns?
 
 \begin{verbatim}
- int funny (int a, int b) {
-     return a + 2 * b;
+ int funny(int a, int b){
+    return a + 2 * b;
  }
  
- int haha() {
-     int c = 2;
-     return funny (c++, c++);
+ int funny2(){
+    int a = 2;
+    return funny(a++, a++);
  }
 \end{verbatim}
 
-What would the value of these expressions be in Java and in Python and in PHP? Or any other language?
-=======
-Returned value in Java is 8,while in C it is 7.
 
-What would the value of these expressions be in Java and in Python and in PHP?
+What would the value of these expressions be in Java and in Python and in PHP? Or any other language?
+In this example the value returned in Java and C are different. Java returns 8 but C returns 7.\\
+This situation caused by the compilers of this languages. In \verb|funny(a++, a++)| statement Java starts from left \verb|a++| but C starts from right \verb|a++|.\linebreak
+
+
 \begin{verbatim}
  1000000000 + 2000000000
  "1000000000" + "2000000000"
 \end{verbatim}
 
-Since java takes the first line as integers the sum of these two numbers would be too big for what Java's int can take, therefore the answer would be some negative number.
+In the first example Java returns a negative integer value. Because java takes the first line as integers the sum of these two numbers would be too big for what Java's int can takem.(aximum int value is 2,147,483,647).\\
 
 Racket for example can do this operation and would return the result as 3000000000.
 
@@ -113,14 +143,21 @@ Racket for example can do this operation and would return the result as 30000000
 The second line Java sees as a string therefore the result would be an concatenated string "10000000002000000000".
 
 On the other hand some languages would calculate the second line as 3000000000.
+
+
+
+
 \setlength{\parindent}{10ex}
 
-\par Interesting fast about languages is that they do have Syntactic Sugar (decoration of language). An simple example of it is a dowhile loop in Java, there is nothing new that it brings to Java, nothing that while or for loop can no do. Taking this out of Java syntax would be called \textbf{desugaring}.
+
+
+
+\par Interesting fact about languages is that they do have Syntactic Sugar (decoration of language). An simple example of it is a dowhile loop in Java, there is nothing new that it brings to Java, nothing that while or for loop can no do. Taking this out of Java syntax would be called \textbf{desugaring}.
 
 \noindent
 Similar is with OR AND and NOT gates in circuits. For ex.: while NAND (AND + NOT) is an complete sent and with combination of few And gates the function of the XOR can be performed. Meaning that in this case XOR gate is a syntactic sugar.
 
-All programming languages are data formats for data input to other programs.
+
 
 \noindent
 Ex: \textbf{Java code} is input for \textbf{compiler} (which is program itself) and it produces a ByteCode (which is program again) and it is input for JVM (which is program itself) and so on...
@@ -137,6 +174,14 @@ At that time for opening the computer small binary code was manually, nowadays i
 Program Text  $\rightarrow$ $\rightarrow$ Data Structure(CANONICAL FORM)  $\rightarrow$ $\rightarrow$- Answer 
 
 Program Text is \textbf{parsed} into a Data structure, and Data Structure is \textbf{interpreted} into answer. The focus of this course will be more on the second part of the process interpreting Data Structure.
+
+
+\center{Program text $\xrightarrow{parse}$ Data Structure $\xrightarrow{interp/eval}$ Answer}\\
+\begin{verbatim}
+ (eval (parse '(+ 2 (* 3 4))))
+\end{verbatim}
+Parsing is common to all compilers/interpreters
+
 
 \end{flushleft}
 

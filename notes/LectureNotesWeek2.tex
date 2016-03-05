@@ -1,0 +1,157 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Functions/Methods}
+\begin{flushleft}
+Robert's on Methods;
+\begin{itemize}
+ \item "Hiding complexity"
+ \item "Tools for programmers"
+ \item "Method calls as expressions"
+ \item "Method calls as messages"
+\end{itemize}
+\sout{"The calling mechanism is that the actual parameters are copied to the formal parameters and the code is executed."}
+\emph{\color{red} it's a lie!}\\
+\doublespacing
+\section*{How methods are used?}
+\tab{Within a function/method you can call another method (We have certainly done that! Example: \verb|Math.min()|)}\\
+{\color{red}Missing:} You can call a method in the expression for the actual parameters;\\
+\end{flushleft}
+\center{\verb|myMethod(Math.max(a, b));| $\leftarrow$ Piping methods}\\
+\begin{flushleft}
+$\star$ Linking codes is very powerful.\\
+\doublespacing
+\begin{itemize}
+ \item Used for decomposition - Break a problem into pieces
+ \item Used for algorithms - Abstraction\\
+ (Example: Binary search)\\
+\end{itemize}
+\end{flushleft}
+\begin{flushleft}
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\tab{In the below java code which is taken from "The Art and Science of java" lets calculate the following equation:}\\
+\center{$\binom{n}{r} = \frac{n!}{(n-r)! r!}$}\\
+\begin{verbatim}
+private int factorial(int n) {
+  int result = 1;
+  for (int i = 1; i <= n; i++) {
+    result *= i;
+  }
+  return result;
+}
+
+public int combinations(int n, int k) {
+  return factorial(n) / (factorial(k) * factorial(n - k));
+}
+\end{verbatim}
+\end{flushleft}
+
+\begin{flushleft}
+\tab{If we try to calculate \verb|combinations(15, 2)| java will return \verb|-4| which is incorrect and there is no error information. It should return 105. This is because of the max integer limits.}\\
+\doublespacing
+The calculation should be done like this;
+\begin{verbatim}
+public int computeBinomialCoefficient(int n, int k) {
+  int ans = 1;
+  k = Math.min(k, n - k);
+  for (int i = 0; i < k; i++) {
+    ans = ans * (n - k + 1 + i);
+    ans = ans / (i + 1);
+  }
+  return ans;
+}
+\end{verbatim}
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\tab{We wrote \underline{a calculator} to make a programming language, we need to add \underline{abstraction}. (= generalisation. In place of numbers we will use \underline{identifiers} in our calculations.)}\\
+Example: 
+\begin{verbatim}
+ int square(int x){ // Here x is formal parameter and bound identifier
+  return x * x;
+ }
+\end{verbatim}
+$\vdots$\\
+\underline{application}
+\begin{verbatim}
+ println(" " + square(7)); // Here "7" is the actual parameter
+\end{verbatim}
+\tab{We evaluate the body of the function by substituting the \underline{actual} parameter for the formal parameter in the body of the function.}\\
+\tab{We need to extend our data definition.}\\
+\tab{We need to add;}\\
+\begin{itemize}
+ \item Function definition
+ \item Function application
+\end{itemize}
+\tab{To start with we will keep our function definitions seperate.}\\
+\tab{Our functions will have a seperate \underline{namespace}.}\\
+\tab{Our interpreter will have two inputs - a list of function definitions - as an expression.}\\
+(Which may include function applications)
+
+
+
+\section*{What does a function have?}
+\begin{itemize}
+ \item A formal parameter - name (identifier)
+ \item A body - expression (in our extended version)
+ \item A name - identifier (in the function name namespace)
+ \item Function name - identifier in the function name namespace
+ \item Actual parameter - identifier
+\end{itemize}
+\tab{Extend our expression data definition.}\\
+\tab{We need to add two more variants.}\\
+\begin{itemize}
+ \item Function application
+ \item Identifier
+\end{itemize}
+\tab{We need to extend the interpreter to deal with the two new variants in the data definition.}
+\begin{itemize}
+ \item Identifier $\rightarrow$ error
+ \item Function application\\
+ \verb|(apply (find-function function-list function-name) actual-parameter)|
+\end{itemize}
+\tab{Statement of purpose for apply, substitute the actual parameter for the formal parameter everywhere in the body of the function, then evaluate the result.}
+
+\begin{verbatim}
+ (define '(apply function-definition actual-parameter){
+  (interp (subst (function-definition formal-parameter) actual-parameters))
+ })
+\end{verbatim}
+\pagebreak
+\textbf{What does subst do?}\\
+name expression expression $\rightarrow$ expression
+
+\underline{Template:}\\
+number $\rightarrow$ number\\
+arith-expression $\rightarrow$ same expression but subst the operands\\
+identifier $\rightarrow$ if the identifier is the identifier to be substitued, we replace it\\
+function application $\rightarrow$ function application, but subst the actual parameter\\
+\doublespacing
+\textbf{The syntax of the $\lambda$-calculus:}\\
+$\Lambda \rightarrow \vartheta$ \\
+$\Lambda \rightarrow$ ($\lambda \vartheta \lambda$)\\
+$\Lambda \rightarrow$ ($\Lambda \Lambda$)\\
+\textbf{Valid sentences:}\\
+$\mathit{a}$\\
+($\mathit{a}$ $\mathit{b}$)\\
+($\lambda$ $\mathit{x}$ $\mathit{x}$) - informally this is the identity function\\
+\sout{($\mathit{a}$ $\mathit{b}$ $\mathit{c}$)} - \textit{not valid}\\
+($\lambda$ $\mathit{f}$ ($\lambda$ $\mathit{x}$ ($\mathit{f}$ ($\mathit{f}$ $\mathit{x}$)))) - a function doubler\\
+($\lambda$ $\mathit{v}$ ($\mathit{...}$))
+\end{flushleft}
+\end{document}

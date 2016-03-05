@@ -1,0 +1,8 @@
+int funny (int a, int b){
+	return a * 2 + b;
+}
+
+int haha () {
+	int z = 2;
+	return funny (z++, z++);
+}

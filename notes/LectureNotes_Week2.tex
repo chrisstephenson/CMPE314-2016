@@ -1,0 +1,144 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+\graphicspath{ {bootstrapping.png} }
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+
+\section*{Function/Methods}
+\subsubsection*{Roberts on methods:}
+  \begin{itemize}
+        \item "Hiding complexity"
+		\item "Tools for programmers"
+		\item "Method calls as expressions"
+		\item "Method calls as messages"
+   \end{itemize}
+ 
+\begin{flushleft}
+The calling mechanism is that the actual parameters are copied to the formal parameters and the code is executed.
+\emph{\color{red} it's a lie!}\\
+
+\end{flushleft}
+\subsection*{How methods are used}
+Within a method you can call another method.(We have certainly done that $\rightarrow$ example Math-min)
+
+\begin{flushleft}
+$\Rightarrow {\color{red}Missing:}$
+You can call a method in the expression for the actual parameters. $\rightarrow$ myMethod(Math.max(a,b));
+\end{flushleft}
+\begin{flushleft}
+ Used for decomposition - Break a problem into pieces
+ \end{flushleft} 
+\begin{flushleft}
+Used for algorithms - abstraction (example binary search)
+\end{flushleft}
+
+
+\newcommand*{\Comb}[2]{{}^{#1}C_{#2}}%
+
+\textbf{\begin{center}
+$\binom nr=\frac{n!}{(n-r)! r!}$
+$=\frac{15!}{(15-2)!2!}= 105$
+\end{center}}
+
+We wrote \underline{a calculator} to make a programming language, we need to add \underline{abstraction}. (= generalisation. In place of numbers we will use \underline{identifiers} in our calculations.)
+\begin{flushleft}
+Example: 
+\end{flushleft}
+\begin{verbatim}
+ int square(int x){ 
+  return x * x;
+ }
+\end{verbatim}
+$Note:$ x is formal parameter and bound identifier
+
+
+\begin{flushleft}
+\underline{application}
+\end{flushleft}
+\begin{verbatim}
+ println(" " + square(7));
+\end{verbatim}
+$Note:$ "7" is the actual parameter
+
+\begin{flushleft}
+\tab{We evaluate the body of the function by substituting the \underline{actual} parameter for the formal parameter in the body of the function.}\\
+\end{flushleft}
+\tab{We need to extend our data definition.}\\
+\tab{We need to add;}\\
+\begin{itemize}
+ \item Function definition
+ \item Function application
+\end{itemize}
+\tab{To start with we will keep our function definitions seperate.}\\
+\tab{Our functions will have a seperate \underline{namespace}.}\\
+\tab{Our interpreter will have two inputs - a list of function definitions - an expression.}\\
+(Which may include function applications)
+  
+\subsection*{What does a function have?}
+\begin{itemize}
+ \item A formal parameter - name (identifier)
+ \item A body - expression (in our extended version)
+ \item A name - identifier (in the function name namespace)
+ \item Function name - identifier in the function name namespace
+ \item Actual parameter - identifier
+\end{itemize}
+\tab{Extend our expression data definition.}\\
+\tab{We need to add two more variants.}\\
+\begin{itemize}
+ \item Function application
+ \item Identifier
+\end{itemize}
+\tab{We need to extend the interpreter to deal with the two new variants in the data definition.}
+\begin{itemize}
+ \item Identifier $\rightarrow$ error
+ \item Function application\\
+ \verb|(apply (find-function function-list function-name) actual-parameter)|
+\end{itemize}
+\tab{Statement of purpose for apply, substitute the actual parameter for the formal parameter everywhere in the body of the function, then evaluate the result.}
+
+\begin{verbatim}
+ (define '(apply function-definition actual-parameter){
+  (interp (subst (function-definition formal-parameter) actual-parameters))
+ })
+\end{verbatim}
+
+
+
+\begin{flushleft}
+\textbf{What does subst do?}\\
+\end{flushleft}
+name expression expression $\rightarrow$ expression
+
+\begin{flushleft}
+\underline{Template:}\\
+\end{flushleft}
+\begin{flushleft}
+number $\rightarrow$ number\\
+arith-expression $\rightarrow$ same expression but subst the operands\\
+identifier $\rightarrow$ if the identifier is the identifier to be substitued, we replace it\\
+function application $\rightarrow$ function application, but subst the actual parameter\\
+\end{flushleft}
+\textbf{Valid sentences:}\\
+$\mathit{a}$\\
+($\mathit{a}$ $\mathit{b}$)\\
+($\lambda$ $\mathit{x}$ $\mathit{x}$) - informally this is the identity function\\
+{($\mathit{a}$ $\mathit{b}$ $\mathit{c}$)} - {not valid}
+
+($\lambda$ $\mathit{f}$ ($\lambda$ $\mathit{x}$ ($\mathit{f}$ 
+($\mathit{f}$ $\mathit{x}$)))) - a function doubler\\
+
+
+\end{document}

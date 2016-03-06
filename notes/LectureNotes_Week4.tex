@@ -1,0 +1,179 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\date{March,3}
+\maketitle
+
+\section*{Lies and Equality (In Java and other languages)}
+\begin{flushleft}
+"=" does not mean "equals" \\
+"\&" does not mean "and"\\
+"$||$" does not mean "or"\\   
+"!" does not mean "surprise"\\
+int does not mean Integer\\
+BigInteger does not mean BigInteger\\              
+\end{flushleft}
+
+\begin{flushleft}
+We use == for "equals"\\
+we use \&\& for logical and\\
+We use $||$ for logical or\\
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+It means a 32 bit two's complement quality (now most compilers are 64 bit)
+\end{flushleft}
+
+\begin{verbatim}
+If I declare MyClass a;
+a is not necessarily an object
+of class MyClass.
+\end{verbatim}
+%
+
+\subsubsection*{Equality What does == mean ?}
+    
+\begin{verbatim}
+class Equality {
+public static void main (String[] args) {
+  MyInteger a = new MyInteger(42);
+  MyInteger b = new MyInteger(42);
+  MyInteger c = new MyInteger(43);
+  MyInteger d = c;
+  String s1 = "Chris";
+  String s2 = "Chris";
+  System.out.println("\n a = " + a + ",b = " + b + "\n");
+  System.out.println("\n a == b is " + (a == b) + "\n");
+  System.out.println("\n s1 == s2 is " + (s1 == s2) + "\n");
+  System.out.println("\nd = " + d + "\n");
+  System.out.println("\n c == d is " + (c == d) + "\n");
+  c.setV(44);
+  System.out.println("\n c = " + c +  "\n");
+ }
+}
+
+class MyInteger {
+  int value;
+  MyInteger (int v) {
+    value = v;
+  }
+  public String toString () {
+    return "" + value;
+  }
+  public void setV (int v) {
+    value = v;
+  }
+ }
+\end{verbatim}    
+
+\doublespacing   
+\begin{flushleft}
+  It does not mean 'equal in value'(necessarily) 
+  \end{flushleft}  
+  
+  \begin{verbatim}
+  String a= "Chris";
+  String b= "Chris";
+  
+  Strings are immutable
+  \end{verbatim}
+   
+    
+\begin{flushleft}
+Our program
+\begin{verbatim}
+'((fundef factorial n (if2 n 1(* n (factorial (- n 1))))) (factoaial 3))
+\end{verbatim}
+\end{flushleft}
+$\downarrow$
+\begin{verbatim}
+parse + desugar
+  fdc[name:symbol][arg:symbol][body:s-expression]
+  (fdc 'factorial 'n (if(idC n)(numC 1))(numC 1))(multC(numC n)
+  				(appC factorial (sub C(idC n)(num 1)
+  				
+  		(appC 'factorial (numC 3))
+\end{verbatim}
+
+\textbf{(if2C \st{(idC 'n)}(numC 1)(mulC \st{(idC 'n)}(appC 'factorial(subC \st{(idC 'n)}(numC 1)))\\
+(idc 'n) $\rightarrow$ (numC 3)
+}\\
+
+
+\[ \left( \begin{array}{ccc}
+remember & to \\
+multiply & by & 3 \\
+\end{array} \right)\] 
+
+\[ \left( \begin{array}{ccc}
+remember & to \\
+multiply & by & 2 \\
+\end{array} \right)\]
+
+\[ \left( \begin{array}{ccc}
+remember & to \\
+multiply & by & 1 \\
+\end{array} \right)\] \begin{center}
+$\downarrow$
+\end{center}
+
+\begin{center}
+(mulC \st{(idC 'n)}(appC 'factorial(subC \st{(idC 'n)}(numC 1)))\\
+(idC 'n)$\rightarrow$(numC 3)
+\end{center}
+
+
+\subsection*{Transformation}
+\begin{flushleft}
+($\lambda$ x M) $\equiv$ ($\lambda$ y M [x:=y])\\
+$\rightarrow$ [x:=y ]$\rightarrow$ substitude y for x troughout M
+\end{flushleft}
+
+\textbf{\begin{flushleft}
+$\curvearrowleft$ transformation(optional)
+\end{flushleft}}
+
+
+\begin{flushleft}
+($\lambda$ x (f x)) $\overrightarrow{\curvearrowleft}$ f\\
+(F y) $\rightarrow$ (f y)\\
+(F z) $\rightarrow$ (f z)\\
+(F w) $\rightarrow$ (f w)\\
+\end{flushleft}
+
+\textbf{\begin{flushleft}
+$\beta$ transformation
+\end{flushleft}}
+
+\begin{flushleft}
+(($\lambda$ x M) y) $\overrightarrow{\beta}$ M [x:=N]\\ 
+($\lambda$ x ($\lambda$ y (y x))) $\equiv$ F
+\end{flushleft}
+
+\begin{flushleft}
+Example \\
+((\underline{F M)} N) $\overrightarrow{\beta}$ ((\underline{$\lambda$ y (y M)})N)\\
+................ $\overrightarrow{\beta}$ (N M)
+\end{flushleft}
+
+\begin{flushleft}
+\underline{Some example: } Let M=y N=x \\
+((F y) x) $\overrightarrow{\beta}$ (($\lambda$ y (y \underline{y})) x)  // identifier capture has happened (y)\\
+................ $\overrightarrow{\beta}$ \underline{(x x)} // disaster !
+\end{flushleft}
+\end{document}

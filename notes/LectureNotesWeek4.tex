@@ -1,0 +1,153 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage[T1]{fontenc}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Lies and Equality (In Java and Other Languages)}
+In Java;
+\begin{itemize}
+ \item "\verb|=|" does not mean "equals" (its assignment)
+ \item "\verb|&|" does not mean "and" (its bitwise and)
+ \item "|" does not mean "or" (its bitwise or)
+ \item "\verb|!|" does not mean "surprise"
+ \item "\verb|int|" does not mean "integer"
+ \item "\verb|Integer|" does not mean "integer"
+ \item "\verb|BigInteger|" does not mean "BigInteger"
+\end{itemize}
+\bigskip
+\begin{itemize}
+ \item We use "\verb|==|" for "equals"
+ \item We use "\verb|&&|" for "logical and"
+ \item We use "||" for "logical or"
+\end{itemize}
+\begin{flushleft}
+ This things are left from C which was invented as high level assembler, not high level language.\\
+ \verb|int| \underline{means} a 32 bit two's complement quantity (now most compilers are 64 bit)
+\end{flushleft}
+\bigskip
+\begin{flushleft}
+ If I declare \verb|MyClass a;|\\
+ \verb|a| is not necessarily an object of class \verb|MyClass|.
+\end{flushleft}
+\bigskip
+\section*{Equality}
+\subsection*{What does == mean?}
+\begin{verbatim}
+  class Equality {
+
+  public static void main (String[] args) {
+    MyInteger a = new MyInteger(42);
+    MyInteger b = new MyInteger(42);
+    MyInteger c = new MyInteger(43);
+    MyInteger d = c;
+    String s1 = "Chris";
+    String s2 = "Chris";
+    System.out.println("\n a = " + a + ",b = " + b + "\n");
+    System.out.println("\n a == b is " + (a == b) + "\n");
+    System.out.println("\n s1 == s2 is " + (s1 == s2) + "\n");
+    System.out.println("\nd = " + d + "\n");
+    System.out.println("\n c == d is " + (c == d) + "\n");
+    c.setV(44);
+    System.out.println("\n c = " + c +  "\n");
+  }
+}
+\end{verbatim}
+\bigskip
+\begin{verbatim}
+class MyInteger {
+  int value;
+  
+  MyInteger (int v) {
+    value = v;
+  }
+
+  public String toString () {
+    return "" + value;
+  }
+
+  public void setV (int v) {
+    value = v;
+  }
+}
+\end{verbatim}
+\bigskip
+Output:
+\begin{verbatim}
+ a = 42,b = 42
+
+
+ a == b is false
+
+
+ s1 == s2 is true
+
+
+d = 43
+
+
+ c == d is true
+
+
+ c = 44
+\end{verbatim}
+
+\begin{flushleft}
+ It does \underline{not} mean "equal in value" (necessarity)\\
+ \verb|setV| method makes our program mutable.\\
+ Java is broken. \verb|NullPointerException| is most likely seen error and it causes programs to crash.\\
+ The best way to solve this problem is to make our programs \textbf{immutable}.
+\end{flushleft}
+\begin{verbatim}
+ String a = "Chris";
+ String b = "Chris";
+\end{verbatim}
+\begin{flushleft}
+ In Java Strings are immutable!
+\end{flushleft}
+\url{http://javapractices.com}\\
+\bigskip
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\bigskip
+\begin{flushleft}
+ Our program;\\
+ \begin{verbatim}
+  '(((fundef factorial n (if2 n 1 (* n (factorial (- n 1))))) (factorial 3))
+ \end{verbatim}
+ parse + desugar
+ \begin{verbatim}
+  (appC 'factorial (numC 3))
+ 
+  (ifzC (idC 'n) (numc 1) (mulC (idC 'n) (appC 'factorial (subC (idC 'n) (numC1)))
+  
+  (idC 'n)'s will be changed with (numC 3)
+ \end{verbatim}
+ \end{flushleft}
+\bigskip
+\centerline{\noindent\rule{18cm}{0.4pt}}
+\section*{$\alpha$ Transformation}
+($\lambda$ $\mathit{x}$ $\mathit{M}$) $\equiv$ ($\lambda$ $\mathit{y}$ $\mathit{M}$ $\mathit{[}$ $\mathit{x}$:=$\mathit{y}$ $\mathit{]}$)
+
+\section*{$\eta$ Transformation (Optional)}
+($\lambda$ $\mathit{x}$ ($\mathit{f}$ $\mathit{x}$)) $\xrightarrow{\eta}$ $\mathit{f}$
+
+\section*{$\beta$ Transformation}
+(($\lambda$ $\mathit{x}$ $\mathit{M}$) $\mathit{N}$) $\xrightarrow{\beta}$ $\mathit{M}$ $\mathit{[}$ $\mathit{x}$ := $\mathit{N}$ $\mathit{]}$
+
+\end{document}
+

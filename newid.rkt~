@@ -1,4 +1,0 @@
-#lang plai-typed
-
-(define (new-ident-maker start : number) : [symbol -> symbol]
-  (lambda (old : symbol) : symbol old))

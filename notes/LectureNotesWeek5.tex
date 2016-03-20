@@ -1,0 +1,210 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage[T1]{fontenc}
+\usepackage{soul}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{The "real" world}
+\begin{flushleft}
+\textbf{"Evaluation \underline{Strategies}"}\\
+\begin{itemize}
+ \item a strange word to use?
+ \item we make the languages.
+\end{itemize}
+The problem is that most languages have design defects, so evaluating them is confusing.\\
+\bigskip
+\textbf{What do we do?}\\
+When and What and How parameters are evaluated?
+\end{flushleft}
+
+\subsection{When?}
+In Java;
+\begin{verbatim}
+  myfunc(a, g(b), c + d);
+  myFunc(a++, a++, a++);	// order matters!
+\end{verbatim}
+** Java compiler (javac) starts evaluating from \underline{left} however C compiler (gcc) starts from \underline{right}.**\\
+\bigskip
+
+\textbf{Are the parameters evaluated left to right or right to left?}\\
+In Java, left to right\\
+In C, \underline{UNDEFINED!}? (Different compilers different answers)
+
+
+\begin{flushleft}
+\textbf{\underline{OR}} We cannot evaluate the parameters at all. And simply pass the expressions to the function body. (All programming languages do this for \underline{some} things)\\
+Racket is a \underline{strict} language, which means parameters \underline{are} evaluated.
+\end{flushleft}
+
+\begin{verbatim}
+;#lang lazy
+#lang racket
+(define (my-if condition t f)
+  (cond
+    (condition t)
+    (else f)))
+    
+(define (fac n)
+  (my-if (< n 1) 1 (* n (fac (- n 1)))))
+\end{verbatim}
+Here \verb|my-if| looks like a function. But it isn't a function in racket. It tries to calculate parameters first. Thus it leads to infinitive loop.\\
+If we uncomment \verb|#lang lazy| it will work. 
+
+\begin{flushleft}
+\underline{Except} for \underline{if}\\
+In Java \verb|f(a) && g(b)| is a boolean \st{expression}\\
+They call it "Short circuited evaluation"\\
+Evaluated left to right and stop when we know the answer.
+\end{flushleft}
+
+\begin{flushleft}
+ 
+\underline{A practical example:}
+\begin{verbatim}
+  int i = 0;
+  while(i < a.length && a[i] != 0) {
+    ...
+    i++;
+  }
+  
+  while(a[i]!=0 && i<a.length){	// after a swap, what goes wrong?
+    ...
+    i++;
+  }
+\end{verbatim}
+If the condition goes to \verb|i > a.length|, the \verb|a[i]| throws an error. So the order is important!
+\end{flushleft}
+
+\begin{flushleft}
+Is evaluation in this language "Strict?" "Non Strict?" "Sometimes Strict?"\\
+A different way of binding formal parameters: \noindent\rule{3cm}{0.4pt}
+\end{flushleft}
+\begin{center}
+\textbf{\underline{Environments}}
+\end{center}
+
+\begin{flushleft}
+\begin{itemize}
+ \item Substitution is not how the real world works (For reasons of efficiency)
+ \item An environment is an ordered store of identifier/value pairs
+ \item For function application we add formal parameter/actual parameter value pairs to the environment and use that environment to evaluate the function body.
+ \item Our \underline{evaluator} takes the environment as an additional parameter when the evaluator evaluates an identifier, it looks up the value in the environment.
+\end{itemize}
+
+\end{flushleft}
+\subsection*{Data Definitions}
+An environment is empty \underline{OR} an identifier/value pair plus an environment.
+\begin{itemize}
+\item look up Env. environment identifier $\rightarrow$ value or \underline{Error}
+\item extend Env. environment identifier $\rightarrow$ environment
+\end{itemize}
+\begin{verbatim}
+Example: 
+(fundef myFunc (a b c) (+ a (* b c))) //function definition
+
+(myFunc 3 7 (+ 2 9)) //function application
+\end{verbatim}
+
+\subsubsection*{Evaluate a function application}
+\begin{verbatim}
+(eval (extend Env (extend Env (extend Env (empty Env, 'a, 3) 'b, 7) 'c, 11) '(+ a (* b c))))
+
+(fundef f1 x (f2 4))
+(fundef f2 y (+ x y))
+\end{verbatim}
+Whats wrong with f2?\\
+It's a free identifier!\\
+In Java:
+\begin{verbatim}
+int f2(int y){
+  return x + y;
+}
+\end{verbatim}
+evaluate (f1 42)\\
+ x gets bound to 42\\
+ y gets bound to 4\\
+ (+ x y) looks up these values in the environment\\
+ The answer is 46 \textbf{Wrong!!}\\
+\bigskip
+Identifier capture!\\
+This is called "dynamic scope" and it is a bug.
+\bigskip
+\begin{flushleft}
+\underline{The solution} (for now)\\
+When we apply a function, do \underline{not} extend the \underline{current environment} with formal parameter/value bindings. Extend the \underline{empty} environment.
+\end{flushleft}
+
+\subsubsection*{Grammar}
+\begin{flushleft}
+$1)$ $\Lambda\rightarrow\upsilon$
+
+$2)$ $\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)$
+
+$3)$ $\Lambda\rightarrow(\Lambda$
+$\Lambda)$
+
+Data structure and therefore definitions and programs will reflect this.\\
+\bigskip
+M[x:=N]\\
+\end{flushleft}
+
+\begin{flushleft}
+$1)$ M is an identifier\\
+\tab{a) M=x $\Rightarrow$ M[x	:=N] is N}\\
+\tab{b) M$\neq$x $\Rightarrow$ M[x:=N] is M}\\
+\bigskip
+$2)$ M is an application (just do the two parts)\\
+\bigskip
+$3)$ M is a function definition\\
+\tab{Case (a) is easy $\lambda$yM1, y=x}\\
+\tab{Case (b) is hard $\lambda$yM1, y$\neq$x}\\
+\end{flushleft}
+
+\subsubsection*{Church Numerals}
+\begin{flushleft}
+n $\equiv$ ($\lambda$ f ($\lambda$ x (f (f (f...x)))))\\
+$\tab{\tab{\tab{\overline{n f's}}}}$
+\end{flushleft}
+
+\begin{flushleft}
+ChurchB(n) $\equiv$ (f (ChurchB(n -1)))\\
+ChurchB(1) $\equiv$ ($\lambda$ f ($\lambda$ x (f x)))\\
+\bigskip
+Church(n) = ($\lambda$ f (x x (ChurchB(n))))\\
+\end{flushleft}
+
+\begin{flushleft}
+TWO=($\lambda$ f ($\lambda$ x (f (f x))))\\
+ZERO=($\lambda$ f ($\lambda$ x x))\\
+\end{flushleft}
+\bigskip
+\begin{flushleft}
+\textbf{A successor function "SUCC"}\\
+SUCC=($\lambda$ n ($\lambda$ f ($\lambda$ x (f ((n f) x))))\\
+onSUCC=($\lambda$ n ($\lambda$ f ($\lambda$ x ((n f) (f x))))
+\end{flushleft}
+
+\begin{flushleft}
+To add m and n;\\
+($\lambda$ m ($\lambda$ n ((m succ) n)))
+\end{flushleft}
+
+\end{document}

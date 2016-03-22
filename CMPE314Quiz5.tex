@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{textgreek}
+
+\title{CMPE314 Notes Quiz 5 Lambda Calculus Free Variable Answers}
+\date{March 2016}
+
+\begin{document}
+
+\maketitle
+
+\section{Quiz 5 - Q100}
+\textit{Question $\rightarrow$ Free Variables}
+
+ \begin{itemize}
+	\item (\textlambda x (\textlambda y (\textlambda z ((\textlambda x (y y)) (\textlambda y (x x)))))) $\rightarrow$ \{ \}
+	\item ((\textlambda b b) b) $\rightarrow$ \{b\}
+	\item a $\rightarrow$ \{a\}
+	\item (\textlambda x (\textlambda y ((\textlambda x (y y)) (\textlambda y (x x)))))$\rightarrow$ \{ \}
+	\item ((\textlambda b c) b)$\rightarrow$ \{b c\}
+	\item ((\textlambda x (y y)) (\textlambda y (x x)))$\rightarrow$ \{y x\}
+	\item (\textlambda y (\textlambda x (y y)))$\rightarrow$ \{ \}
+	\item (\textlambda b ((a b) (b c)))$\rightarrow$ \{a c\}
+	\item ((\textlambda x (x x)) (\textlambda x (x x)))$\rightarrow$ \{ \}
+	\item ((a b) (b c)) $\rightarrow$ \{a b c\}
+	\item ((\textlambda x (x x)) (\textlambda y (y y)))$\rightarrow$ \{ \}
+	\item (a b) $\rightarrow$ \{a b\}
+	\item (\textlambda a a)$\rightarrow$ \{ \}
+	\item (\textlambda x (\textlambda y (y y)))$\rightarrow$ \{ \}
+	\item (\textlambda a b)$\rightarrow$ \{b\}
+	\item (\textlambda  a b)
+ \end{itemize}
+ 
+ \end{document}

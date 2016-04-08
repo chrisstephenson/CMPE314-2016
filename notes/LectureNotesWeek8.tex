@@ -1,0 +1,154 @@
+\documentclass{article}
+%\usepackage{textgreek}
+
+\title{CMPE314 Notes08 Haskell - Functional Programming \& Sugaring $\lambda$ Calculus}
+\date{April 2016}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Haskell}
+\begin{flushleft}
+Haskell is: \\-Purely functional\\ -Statically typed \\ - Lazy(entirely )\\
+\end{flushleft}
+
+
+\begin{flushleft}
+ In addition to this, Haskell is:\\ -Very interesting language \\ - Become important commercial language \\ - Facebook works on it \\ - Almost pure  $\lambda$ Calculus (Closer to  $\lambda$ calculus than Racket
+\end{flushleft}
+
+
+\vspace{2mm}
+
+\begin{flushleft} Haskell is not for production and other tales(youtube video)\\
+\usepackage{https://www.youtube.com/watch?v=mlTO510zO78} \\
+\end{flushleft}
+
+
+\doublespacing
+\section{Functional Programming}
+\begin{flushleft}
+Functions are first class values.\\
+They have no state nor side effects.\\
+Guarantee that if parameters are same, the result is the same.\\
+
+\vspace{2mm}
+\textbf{How can we do this in our interpereter?}
+
+\subsection*{1) Types}
+A function application will no longer be (name expr)\\
+It will be (expr expr)\\
+This means we have more than one type of expression.\\
+So expression values are no longer automatically numbers.\\
+So we have run time types. So we can have booleans.\\
+
+Now, in our new language expression can be whether function, boolean or number.\\
+
+\subsection*{2) How will functions be named?}
+Just like any other expression.\\
+Identifiers( which are always formal parameters) and are then applied to actual parameters.\\
+This will also be true for functions.\\
+
+\vspace{5mm}
+\textbf{What would be like to have?}
+
+
+(let
+   
+  \hspace{1cm}(myfunc ($\lambda$ x ( + x 3 )))\\
+  \hspace{1cm}(myfunc2 ($\lambda$ y (+ y 4 )))\\
+   
+  \hspace{1cm}\textless program \textgreater
+   \\)
+
+\vspace{5mm}
+
+\textbf{After desugaring:}
+\vspace{2mm}
+
+((  $\lambda$ (myfunc myfunc2)\\
+\textless program \textgreater)\\
+\hspace{1cm}( $\lambda$ (x) (+ x 3) )\\
+\hspace{1cm}( $\lambda$ (y) (+ y 4) ))\\
+
+\textbf{\underline {Let} is \underline{sugar.}}
+
+
+
+
+
+\subsection*{3) Closure }
+(let
+   
+  \hspace{1cm}((multiply-list-by-n ($\lambda$  (l n)\\
+  \hspace{1cm} (map ($\lambda$ (x) (* x n))) l))\\
+
+  \hspace{1cm}((multiply-list-by-n '(4 5) 3)\\
+  \hspace{1cm}((multiply-list-by-n '(5 6) 7)\\
+  
+ \vspace{5mm}
+ We need to distinguish function definitions from function values when we evaluate a function definition, we get a function value. A function value is a function definition plus the environment at the point where the functiıon value was evaluated. This is called a closure.
+
+
+\subsection*{4) When we apply a function value?}
+
+Extend the environment in the function value with the bindings of the formal parameters to the actual parameters
+
+\vspace{2mm}
+\textbf{Sugaring the $\lambda$-calculus; }\\
+\vspace{2mm}
+Some definitions;
+
+($F^{0}$M)  $\equiv$ M\\
+($F^{n\neq1}$M)  $\equiv$ F(($F^{n}$M)\\
+\vspace{8mm}
+
+
+
+
+
+\hspace{1cm} Church Numeral = $C_n$\\
+\vspace{1mm}
+\hspace{1cm}  $C_n$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{n}$ x )))\\
+\hspace{1cm}  $C_0$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{0}$ x )))  $\equiv$ ( $\lambda$ f ( $\lambda$ x x )) \\
+\hspace{1cm}  $C_1$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{1}$ x )))  $\equiv$ ( $\lambda$ f ( $\lambda$ f x )) \\
+\hspace{1cm}  $C_2$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{2}$ x )))  $\equiv$( $\lambda$ f ( $\lambda$ x f (f x ))) \\
+\vspace{5mm}
+
+\hspace{1cm}\underline{Let}- as we did for our interpreter
+
+\hspace{1cm}\textbf{Succ} ($\lambda$ n ( $\lambda$ f ( $\lambda$ x) f (( n f) x )))\\
+\hspace{1cm}\textbf{True} ( $\lambda$ x ( $\lambda$ y x ))\\
+\hspace{1cm}\textbf{False} ( $\lambda$ x ( $\lambda$ y y ))\\
+\hspace{1cm}\textbf{If} ( $\lambda$ a ( $\lambda$ b ($\lambda$ c ((a b ) c))))\\
+\hspace{1cm}\textbf{Zero?} ( $\lambda$ n (( n ($\lambda$ x FALSE)) TRUE))\\
+\vspace{5mm}
+
+
+
+
+
+\section{Data Structure}
+
+\hspace{5mm} If we can make a pair, we can make a data structure.\\
+\vspace{2mm}
+\hspace{5mm} What are the semantics of CONS FIRST REST (in Racket)?\\
+\vspace{1mm}
+\hspace{5mm} (FIRST ( CONS A B )) $\equiv$ A
+
+\hspace{5mm} (REST (CONS A B ))  $\equiv$ B
+
+\vspace{2mm}
+\hspace{6mm}\textbf{CONS:} ($\lambda$ a ($\lambda$ b ( $\lambda$ ((f a ) b)))) \\
+\vspace{1mm}
+\hspace{6mm}\textbf{FIRST:} ($\lambda$ c (c TRUE))\\
+\vspace{1mm}
+\hspace{6mm}\textbf{REST:} ($\lambda$ c (c FALSE))\\
+
+\end{flushleft}
+
+
+
+\end{document}

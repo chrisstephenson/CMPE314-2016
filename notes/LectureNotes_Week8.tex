@@ -1,0 +1,146 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\date{April,7}
+\maketitle
+
+\section{Haskell}
+\begin{flushleft}
+\begin{itemize}
+\item Purely functional 
+\item Statically typed 
+\item Lazy.
+\end{itemize}
+\end{flushleft}
+
+\subsection*{Haskell Curry}
+\begin{flushleft}
+\begin{itemize}
+\item Haskell Platform
+\item Simon Reyton-Jones (F\#) (Glasgow) 
+\end{itemize}
+\end{flushleft}
+
+\section{Functional Programming}
+\begin{flushleft}
+\begin{itemize}
+\item Functions are first class values
+\item No state / No side effects\\
+\doublespacing
+How can we do this in our interpreter ?\\
+A function application (name expr) will no longer be, it will be (expr expr);\\
+$\downarrow$
+\item This means we have more than one \underline{type} of expression
+\item So expression values are no longer automatically numbers.
+\item So we have runtime types.
+\end{itemize}
+\end{flushleft}
+
+\subsection*{1- TYPES}
+\subsection*{2- How will functions be named ?}
+\begin{flushleft}
+\begin{itemize}
+\item Just like any other expression.
+\item Identifiers (which are always formal parameters) and are then applied to actual parameters.
+\item This will also be true for functions.
+\end{itemize}
+\doublespacing
+What would be like to have?
+
+(let
+   
+  \hspace{0.5cm}(myfunc ($\lambda$ x ( + x 3 ))) $\rightarrow$ function def.\\ 
+  \hspace{0.5cm}(myfunc2 ($\lambda$ y (+ y 4 ))) $\rightarrow$ function def.\\ 
+  \hspace{0.5cm}\textless\ program \textgreater {} $expression$
+\\)
+
+
+\textbf{After desugaring:}
+
+((  $\lambda$ (myfunc myfunc2)\\
+\textless\ program \textgreater)\\
+\hspace{0.5cm}( $\lambda$ (x) (+ x 3))\\
+\hspace{0.5cm}( $\lambda$ (y) (+ y 4)))\\
+\textbf{Let is sugar.}\\
+
+(let
+   
+  \hspace{0.5cm}((double ($\lambda$ (x) ( * x 2 )))\\
+  \hspace{0.5cm}(double 7))\\
+   
+(($\lambda$ (double)\\
+\hspace{0.5cm}(double 7))\\
+\hspace{0.5cm}($\lambda$ (x) ( * x 2 )))\\
+\doublespacing
+
+(let
+   
+  \hspace{0.5cm}((multiply-list-by-n ($\lambda$ (l n) (map \underline{($\lambda$ (x) (* x n))} l)) // Some function def. Does something different\\
+  \hspace{1cm}(multiply-list-by-n '(4 5) 3)\\
+  \hspace{1cm}(multiply-list-by-n '(5 6) 7)\\
+
+\end{flushleft}
+
+
+\subsection*{3- Closure}
+\begin{flushleft}
+We need to distinguish function definitions from \underline{function values} when we evaluate a function definition, we get a \underline{function value}. \\
+
+\doublespacing
+function definition $(one$ $\rightarrow$ $many)$ function values.\\
+
+A function value is a function definition plus the environment at the point where the function value was evaluated. This is called a \textbf {closure.}
+\end{flushleft}
+
+\subsection*{4- When we apply a function value?}
+
+Extend the environment in the function value with the bindings of the formal parameters to the actual parameters
+\doublespacing
+\textbf{Sugaring the $\lambda$-calculus; }\\
+\vspace{2mm} Some definitions;
+
+($F^{0}$M)  $\equiv$ M\\
+($F^{n+1}$M)  $\equiv$ F(($F^{n}$M)\\
+
+Church Numeral = $C_n$\\
+$C_n$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{n}$ x )))\\
+$C_0$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{0}$ x )))  $\equiv$ ( $\lambda$ f ( $\lambda$ x x )) \\
+$C_1$ $\equiv$($\lambda$ f ($\lambda$ x x ( $f^{1}$ x )))  $\equiv$ ( $\lambda$ f ( $\lambda$ x (f x ))) \\
+$C_2$ $\equiv$($\lambda$ f ($\lambda$ x x ( $f^{2}$ x )))  $\equiv$( $\lambda$ f ( $\lambda$ x f (f x ))) \\
+\doublespacing\\
+\underline{LET} - as we did for our interpreter.\\
+\textbf{SUCC} ($\lambda$ n ( $\lambda$ f ( $\lambda$ x) (f (( n f) x ))))\\
+\textbf{TRUE} ( $\lambda$ x ( $\lambda$ y x ))\\
+\textbf{FALSE} ( $\lambda$ x ( $\lambda$ y y ))\\
+\textbf{IF} ( $\lambda$ a ( $\lambda$ b ($\lambda$ c ((a b ) c))))\\
+\textbf{ZERO?} ( $\lambda$ n (( n ($\lambda$ x FALSE)) TRUE))\\
+
+
+\section{Data Structure}
+
+If we can make a pair, we can make a data structure.\\
+What are the semantics of CONS FIRST REST (in Racket)?\\
+\doublespacing\\
+\hspace{3mm} (FIRST ( CONS A B )) $\equiv$ A // Necessary semantics\\
+\hspace{3mm} (REST (CONS A B ))  $\equiv$ B // Necessary semantics\\
+\doublespacing\\
+\textbf{CONS:} ($\lambda$ a ($\lambda$ b ( $\lambda$ \textcolor{red}{((f a ) b)})))\\
+\textbf{FIRST:} ($\lambda$ c (c TRUE))\\
+\textbf{REST:} ($\lambda$ c (c FALSE))\\
+
+
+\end{document}

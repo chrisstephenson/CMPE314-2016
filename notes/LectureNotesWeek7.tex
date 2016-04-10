@@ -1,0 +1,199 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Evaluation "Strategies"}
+\underline{All about function application} - which is the central concept in programming \textbf{IMHO} an oxymoron
+\begin{flushleft}
+ We looked at \underline{sequence}. (2 weeks ago)
+ \begin{itemize}
+  \item Strict vs. non-strict
+  \item Eager vs. lazy
+  \item Left to right vs. right to left
+ \end{itemize}
+\underline{What} is passed when we apply a function to actual parameter.\\
+Example (in Java)\\
+\begin{verbatim}
+ {
+  a = 2;
+  myFunc(a);
+ }
+ 
+ void myFunc(int a){
+  ...
+  a = a + 1;
+ }
+\end{verbatim}
+What is the value of \verb|a|?\\
+\verb|System.out.println("a is: " + a);| $\rightarrow$ The answer is 2.
+\end{flushleft}
+\subsection*{Why?}
+\begin{flushleft}
+ Because Java/C/C\#/Ruby/Python/C++ are, \underline{call by value}\\
+ For simple types, most common programming languages are call by value.\\
+ The alternative is \underline{call by preference} (PHP \underline{can} do this)
+\end{flushleft}
+\section*{But what about complex types?}
+\underline{Example:} array, structure, object\\
+In Java:
+\begin{verbatim}
+ {
+  ...
+  a[k] = 2;
+  myFunc(a);
+  System.out.println("a[k] is " + a");
+ }
+ 
+ 
+ void myFunc(int[] a){
+  ...
+  a[l] = a[l] + 1;
+  ...
+ }
+\end{verbatim}
+\begin{flushleft}
+Call by reference for arrays/Structures/Strings/Objects\\
+(Except C - C structures are naturally call by value)\\
+Java Strings can be considered call by value. (Because Java Strings are immutable)
+\end{flushleft}
+
+\section*{SUPER ACCELERATED CMPE313 (SICP - The Purple Book)}
+\begin{flushleft}
+ What is a list? A list of \st{numbers} x?
+ \begin{itemize}
+  \item Empty
+  \item A pair of a \st{number} x and a list of \st{number} x.
+ \end{itemize}
+ \begin{verbatim}
+  ;; add-up the numbers in a list
+  (define (sum-lon lon)
+    (cond
+      ((empty? lon) 0)
+      (else (+ (first lon) (sum-lon (rest lon))))))
+      
+
+  (define (mul-lon lon)
+    (cond
+      ((empty? lon) 1)
+      (else (* (first lon) (mul-lon (rest-lon))))))
+      
+      
+  (define (fold combiner null-value lox)
+    (cond
+      ((empty? lox) null-value)
+      (else (combiner (first lox) (fold combiner null-value (rest lox))))))
+ \end{verbatim}
+ \textbf{fold} is a powerful \underline{abstraction}.\\
+ \bigskip
+ I want to evaluate a polynomial.\\
+ $ {a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + {a}_{3}{x}^{3} +....+ {a}_{n}{x}^{n} $ \\
+ Data definition a polynomial number $\rightarrow$ number\\
+ \bigskip
+ Horner's rule;\\
+ ${a}_{0} + x({a}_{1} + x({a}_{2} + x({a}_{3}...{a}_{n}))))$\\
+ \bigskip
+ To evaluate a polynomial\\
+ \begin{verbatim}
+  (define (eval-poly p x)
+    (fold (lambda (l r) (+ l (+ l (* x r)) non-empty p))))
+ \end{verbatim}
+ map
+ \begin{verbatim}
+  (define (map f lox) 
+    (fold (lambda (l r) (cons (f l) (cons (f l) r)) empty lox)))
+ \end{verbatim}
+\bigskip
+ filter
+\begin{verbatim}
+ (define (filter p? lox)
+    (fold (lambda (l r) (if (p? l) (cons l r) empty lox))))
+\end{verbatim}
+Suppose I am doing a \underline{map} to add 2 to every item in a list:
+\begin{verbatim}
+ (define (add2 lon)
+    (map (lambda (x) (+ x 2)) lon))
+    
+ (define (mul 7 lon)
+    (map (lambda (x) (* x 7)) lon))
+    
+ (define (curry f x)
+    (lambda (y) (f x y)))
+\end{verbatim}
+Generalizing:
+\begin{verbatim}
+ (define (arith-map operator constant)
+    (map (curry operator constant) lon))
+\end{verbatim}
+\end{flushleft}
+\section*{The $\lambda$-calculus}
+\subsubsection*{Summary:}
+\begin{flushleft}
+$\Lambda\rightarrow\upsilon$ (identifier) \\ 
+$\Lambda\rightarrow(\lambda$ $\upsilon$ $\Lambda)$ (definition) \\
+$\Lambda\rightarrow(\Lambda$ $\Lambda)$ (application) \\
+\bigskip
+\underline{$\alpha$ rewriting rule:}\\
+($\lambda$ $\upsilon$ $\Lambda$) $\equiv$ ($\lambda$ $\mathit{u}$ $\Lambda$[$\upsilon$:=$\mathit{u}$]) (plagiarizing student rule)\\
+\bigskip
+\underline{$\eta$ rule (optional):}\\
+($\lambda$ $\upsilon$ (f $\upsilon$)) $\equiv$ f\\
+\bigskip
+\underline{$\beta$ rule:}\\
+(($\lambda$ $\upsilon$ ${\Lambda}_{1}$) ${\Lambda}_{2}$ $\xrightarrow{\beta}$ ${\Lambda}_{1}$ [$\upsilon$:=${\Lambda}_{2}$]\\
+\bigskip
+defining substitution is more complicated\\
+$\Lambda$[$\upsilon$:=${\Lambda}_{0}$] - see the slides \\
+\begin{itemize}
+ \item[(a)] $\Lambda$ = $\mathit{u}$
+ \item[] if $\mathit{u}$ = $\upsilon$ $\rightarrow$ ${\Lambda}_{0}$ 
+ \item[] else $\Lambda$
+ \item[(b)] $\Lambda$ = (${\Lambda}_{1}$ ${\Lambda}_{2}$)
+ \item[] (${\Lambda}_{1}$[$\upsilon$=${\Lambda}_{0}$] ${\Lambda}_{2}$[$\upsilon$=${\Lambda}_{0}$]
+ \item[(c)] $\Lambda$ = ($\lambda$ $\mathit{u}$ ${\Lambda}_{1}$)
+ \subitem$\mathit{(i)}$ $\mathit{u}$ = $\upsilon$ $\rightarrow$ $\Lambda$
+ \subitem$\mathit{(ii)}$ $\mathit{u}$ $\neq\upsilon$ $\rightarrow$ if necessary re-letter before substituting in the body.
+\end{itemize}
+\end{flushleft}
+\pagebreak
+\section*{Church Numerals}
+\begin{flushleft} 
+ 0 $\equiv$ ($\lambda$ $\mathit{f}$ ($\lambda$ $\mathit{x}$ $\mathit{x}$))\\
+ 1 $\equiv$ ($\lambda$ $\mathit{f}$ ($\lambda$ $\mathit{x}$ ($\mathit{f}$ $\mathit{x}$)))\\
+ 2 $\equiv$ ($\lambda$ $\mathit{f}$ ($\lambda$ $\mathit{x}$ ($\mathit{f}$ ($\mathit{f}$ $\mathit{x}$))))\\
+\bigskip
+\textbf{Successor:}\\
+SUCC=($\lambda$ n ($\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ( $\mathit{f}$  ((n  $\mathit{f}$ )  $\mathit{x}$ ))))\\
+onSUCC=($\lambda$ n ($\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ((n  $\mathit{f}$ ) ( $\mathit{f}$   $\mathit{x}$ ))))\\
+\bigskip
+(($\lambda$ n ($\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ( $\mathit{f}$  ((n  $\mathit{f}$ )  $\mathit{x}$ ))))) $\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ( $\mathit{f}$   $\mathit{x}$ ))))\\
+\bigskip
+$\downarrow \beta$\\
+\bigskip
+($\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ( $\mathit{f}$  (($\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ( $\mathit{f}$   $\mathit{x}$ )))  $\mathit{f}$ )  $\mathit{x}$ ))))\\
+\bigskip
+$\downarrow \beta$\\
+\bigskip
+($\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ( $\mathit{f}$  (($\lambda$  $\mathit{x}$  ( $\mathit{f}$   $\mathit{x}$ )))  $\mathit{x}$ ))))\\
+\bigskip
+$\downarrow \beta$\\
+\bigskip
+($\lambda$  $\mathit{f}$  ($\lambda$  $\mathit{x}$  ( $\mathit{f}$  ( $\mathit{f}$   $\mathit{x}$ )))) $\equiv$ 2!
+\end{flushleft}
+
+\end{document}

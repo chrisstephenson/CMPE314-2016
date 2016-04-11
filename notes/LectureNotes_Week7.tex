@@ -1,0 +1,225 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\date{March,24}
+\maketitle
+
+\section*{Evaluation "Strategies"}
+\begin{flushleft}
+\underline{All about function application}- which is the central concepts in programming \underline{(IMHO)} an \underline{oxymoron.} 
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+- We looked at sequence (2 weeks ago)\\
+- Strict vs non-strict\\
+- Eager vs Lazy\\
+- Left to Right is Right to Left\\
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+What is the passed when we apply a function to actual parameters ?
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+\underline{When?}\\
+Example In Java: 
+\begin{verbatim}
+{ 
+a=2;
+myFunc(a);
+}
+------------------------------
+void myFunc(int a){
+...
+a=a+1;
+}
+\end{verbatim}
+\end{flushleft}
+
+\subsection*{What is the value of a?}
+\begin{flushleft}
+System.out.println("a is" +a); $\leftarrow$ The answer is \underline{2}.
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+\underline{Why?}\\
+Because Java / C / C\# / Ruby / Python / C++ are \underline{call by value}\\
+For simple types, most common programming languages are call by value.\\
+The alternative is \underline{call by preference} (PHP can do this)
+\end{flushleft}
+
+\subsection*{But What about complex types ?}
+\begin{flushleft}
+Examples-array, structure, object.
+\begin{verbatim}
+{ 
+a[ ]=2;
+myFunc(a);
+System.out.println("a[ ] is" +a); }
+
+void myFunc(int [] a){
+---
+a[ ]=a[ ]+1
+}
+\end{verbatim}
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+Call by reference for arrays / structures / Strings / objects 
+\begin{verbatim}
+[Except C-C structures are naturally call by value]
+\end{verbatim}
+\begin{flushleft}
+Java strings can be considered call-by-value (because Java strings are immutable)
+\end{flushleft}
+\end{flushleft}
+
+\subsection*{Super accelerated CMPE 313 - (SICP-The Purple Book 1989)}
+\begin{flushleft}
+What is a List ? A list of numbers ?
+\end{flushleft}
+\begin{itemize}
+\item Empty
+\item A pair of a \st{number}(x) and a list of \st{number}(x)
+\end{itemize}
+\begin{verbatim}
+;;add up the numbers in a list
+(define (sum-lon lon)
+  (cond)
+  ((empty? lon) O(empty set))
+  (else ..(+ (first lon)...(sum-lon(rest lon)))))
+  
+(define (mul-lon lon)
+  (cond 
+  ((empty? lon) 1)
+  (else..(* (first lon)(mul-lon(rest lon)))))
+  
+(define (fold combiner null-value lox)
+  (cond
+  ((empty? lox) 1)
+  (else (* (combiner (first lox) (fold combiner null-value (rest lox))))))
+\end{verbatim}
+
+\begin{flushleft}
+fold is a powerful \underline{abstraction}.\\
+I want to evaluate a \underline{polynomial}.
+\end{flushleft}
+
+\begin{center}
+${a}_{0} + {a}_{1}x + {a}_{1}{x}^{2} + {a}_{1}{x}^{3} +....+ {a}_{n}{x}^{n}$ 
+\end{center}
+
+\begin{flushleft}
+Data definition a polynomial is a list of coefficient $({a}_{0},{a}_{1},..,{a}_{n})$\\
+Contract eval polynomial number $\rightarrow$ number\\
+Horner's rule ${a}_{0} + x({a}_{1} + x({a}_{2} + x({a}_{3}...{a}_{n}))))$\\
+To evaluate a polynomial\\
+------\\
+(define (eval-poly p x)\\
+(fold (lambda (l $\gamma$) (+ l (* x r)) $\emptyset$ p))
+\end{flushleft}
+
+\begin{flushleft}
+\underline{map}\\
+(define (map f lox)\\
+(fold (lambda (l $\gamma$) (cons (f l) r)) empty lox))))\\
+\end{flushleft}
+
+\begin{flushleft}
+\underline{filter}\\
+(define (filter p? lox)\\
+(fold (lambda (L r) (if (p? L) (cons (r) r) empty lox))\\
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+Suppose I am doing a \underline{map} to add 2 to every item in a list
+\begin{verbatim}
+(define (add2 lon)
+  (map (lambda (x) (+ x 2)) lon))
+  
+(define (mul 7 lon)
+  (map (lambda (x) (* x 7)) lon ))
+  
+(define (carry f x)
+  (lambda (y) (f x y)))
+---------------------------
+(define (arith-map openbar constant)
+  (map (carry operator constant) lon))
+\end{verbatim}
+\end{flushleft}
+
+\begin{flushleft}
+\textbf{The $\lambda$-calculus} (Summary)\\
+$1)$ $\Lambda\rightarrow\upsilon$
+
+$2)$ $\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)$
+
+$3)$ $\Lambda\rightarrow(\Lambda$
+$\Lambda)$
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+$\alpha$ ($\lambda$ $\upsilon$ $\Lambda$) $\equiv$ ($\lambda$ $\upsilon$ $\Lambda$ [$\upsilon$:=u])\\
+$\gamma$ ($\lambda$ $\upsilon$ (f $\upsilon$)) $\equiv$ f\\
+$\beta$ (($\lambda$ $\upsilon$ ${\Lambda}_{1}$) ${\Lambda}_{2}$ $\rightarrow$ ${\Lambda}_{1}$ [$\upsilon$:=${\Lambda}_{2}$]
+\end{flushleft}
+
+\begin{flushleft}
+Defining substitution is more complicated.\\
+$\Lambda$[$\upsilon$:=${\Lambda}_{0}$] - see the slides 
+\end{flushleft}
+
+\begin{flushleft}
+\textbf{a)} $\Lambda$=u\\
+if u=$\upsilon$ $\rightarrow$ ${\Lambda}_{0}$ \\
+else $\Lambda$\\
+\textbf{b)} $\Lambda$=(${\Lambda}_{1}$ ${\Lambda}_{2}$)\\
+(${\Lambda}_{1}$[$\upsilon$=${\Lambda}_{0}$] ${\Lambda}_{2}$[$\upsilon$=${\Lambda}_{0}$]\\
+\textbf{c)} $\Lambda$=($\lambda$ u ${\Lambda}_{1}$)\\
+(i) u=$\upsilon$ $\rightarrow$ $\Lambda$\\
+(ii) u$\neq\upsilon$ if necessary re-letter before substituting in the body.
+\end{flushleft}
+
+\subsubsection*{Church Numerals}
+\begin{flushleft}
+0 $\equiv$ ($\lambda$ f ($\lambda$ x x))\\
+1 $\equiv$ ($\lambda$ f ($\lambda$ x (f x)))\\
+2 $\equiv$ ($\lambda$ f ($\lambda$ x (f (f x))))
+\end{flushleft}
+
+\subsubsection*{Successor}
+\begin{flushleft}
+Succ=($\lambda$ n ($\lambda$ f ($\lambda$ x (f ((n f) x))))\\
+onSucc=($\lambda$ n ($\lambda$ f ($\lambda$ x ((n f) (f x))))\\
+(($\lambda$ n ($\lambda$ f ($\lambda$ x (f ((n f) x))))) $\lambda$ f ($\lambda$ x (f x))))\\
+$\downarrow \beta$\\
+($\lambda$ f ($\lambda$ x (f (($\lambda$ f ($\lambda$ x (f x))) f) x))))\\
+$\downarrow \beta$\\
+($\lambda$ f ($\lambda$ x (f (($\lambda$ x (f x))) x))))\\
+$\downarrow \beta$\\
+($\lambda$ f ($\lambda$ x (f (f x)))) $\equiv$ 2!
+\end{flushleft}
+\end{document}

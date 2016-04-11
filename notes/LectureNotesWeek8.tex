@@ -1,0 +1,132 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Haskell}
+\begin{itemize}
+ \item Purely functional - no state of programs
+ \item Statically typed
+ \item Lazy
+\end{itemize}
+
+\section*{Functional Programming}
+\begin{itemize}
+ \item Functions are first class values.
+ \item No state / no side effects
+\end{itemize}
+\begin{flushleft}
+ How can we do this in our interpreter?\\
+ A function application \verb|(name expr)| will no longer be.\\
+ It will be \verb|(expr expr)|\\
+ This means we have more than one \underline{type} of expression. So runtime types. So we can have booleans.
+\end{flushleft}
+\section{Types}
+\section{How will functions be named?}
+\begin{flushleft}
+\begin{itemize}
+ \item Just like any other expression.
+ \item Identifiers (which are always formal parameters) and are then applied to actual parameters.
+ \item This will also be true for functions.
+\end{itemize}
+\bigskip
+What would we like to have?\\
+\begin{verbatim}
+ (let
+    (myfunc (lambda (x) (+ x 3)))      function definition
+    (myfunc2 (lambda (y) (* y 4)))     function definition
+    ...<program>                       expressions
+    )
+\end{verbatim}
+\underline{let} is \underline{sugar}.\\
+Desugaring the let;
+\begin{verbatim}
+ ((lambda (myfunc myfunc2)
+    <program>)
+    (lambda (x) (+ x 3)) (lambda (y) (* y 4)))
+\end{verbatim}
+\pagebreak
+\underline{Example:}
+\begin{verbatim}
+ (let
+      ((double (lambda (x) (* x 2)))
+    (double 7))
+ 
+ ((lambda (double)
+    (double 7))
+      (lambda (x) (* x 2)))
+\end{verbatim}
+\begin{verbatim}
+ (let
+    ((multiply-list-by-n (lambda (l n) (map (lambda ((x) (* x n)) l))
+      (multiply-list-by-n '(4 5) 3)
+      (multiply-list-by-n '(5 6) 7)))))
+\end{verbatim}
+\end{flushleft}
+
+\section{Closure}
+\begin{flushleft}
+ We need to distinguish function definitions from \underline{function values} when we \underline{evaluate} a function definition we get a \underline{function value}.\\
+ \bigskip
+ function definition $\xrightarrow{one->many}$ function value\\
+ \bigskip
+ A \underline{function value} is a function definition \underline{plus} the environment at the point where the function value was evaluated. This is called \underline{closure}.
+\end{flushleft}
+
+\section{When we apply a function value?}
+\begin{flushleft}
+ Extend the environment in the function value with the bindings of the formal parameters to the actual parameters.
+\end{flushleft}
+\subsection{Sugaring the $\lambda$-calculus}
+\begin{flushleft}
+ \underline{Some definitions}\\
+ ($F^{0}$M)  $\equiv$ M\\
+ ($F^{n+1}$M)  $\equiv$ F($F^{n}$M))\\
+ \bigskip
+ $C_n$ = Church numeral $\mathit{n}$\\
+ \bigskip
+ So,\\
+ $C_n$ $\equiv$($\lambda$ $\mathit{f}$ ($\lambda$  $\mathit{x}$  ( $f^{n}$  $\mathit{x}$)))\\
+ $C_0$ $\equiv$($\lambda$ $\mathit{f}$ ($\lambda$  $\mathit{x}$  ( $f^{0}$  $\mathit{x}$)))  $\equiv$ ($\lambda$ $\mathit{f}$ ($\lambda$  $\mathit{x}$   $\mathit{x}$))\\
+ $C_1$ $\equiv$($\lambda$ $\mathit{f}$ ($\lambda$  $\mathit{x}$  ($f^{1}$  $\mathit{x}$)))  $\equiv$ ($\lambda$ $\mathit{f}$ ($\lambda$  $\mathit{x}$  ($\mathit{f}$  $\mathit{x}$)))\\
+ $C_2$ $\equiv$($\lambda$ $\mathit{f}$ ($\lambda$  $\mathit{x}$  ($f^{2}$  $\mathit{x}$)))  $\equiv$ ($\lambda$ $\mathit{f}$ ($\lambda$  $\mathit{x}$  ($\mathit{f}$ ($\mathit{f}$  $\mathit{x}$))))\\
+ \bigskip
+ \underline{LET} - as we did for our interpreter\\
+ \begin{tabular}{l l}
+  SUCC & ($\lambda$ $\mathit{n}$ ($\lambda$ $\mathit{f}$ ( $\lambda$ $\mathit{x}$) ($\mathit{f}$ (($\mathit{n}$ $\mathit{f}$) $\mathit{x}$))))\\
+  TRUE & ($\lambda$ $\mathit{x}$ ($\lambda$ $\mathit{y}$ $\mathit{x}$))\\
+  FALSE & ($\lambda$ $\mathit{x}$ ($\lambda$ $\mathit{y}$ $\mathit{y}$))\\
+  IF & ($\lambda$ $\mathit{a}$ ($\lambda$ $\mathit{b}$ ($\lambda$ $\mathit{c}$ (($\mathit{a}$ $\mathit{b}$) $\mathit{c}$))))\\
+  ZERO? & ($\lambda$ $\mathit{n}$ (($\mathit{n}$ ($\lambda$ $\mathit{x}$ $\mathit{FALSE}$)) $\mathit{TRUE}$))\\
+ \end{tabular}
+ \end{flushleft}
+\pagebreak
+ \subsection{Data Structures}
+ If we can make a pair, we can make a data structure.\\
+ What are the semantics of \verb|CONS FIRST REST| (in Racket)?\\
+ \begin{itemize}
+  \item[] \verb|(FIRST (CONS A B)) = A        -> necessary semantics|
+  \item[] \verb|(REST (CONS A B)) = B         -> necessary semantics|
+ \end{itemize}
+ \bigskip
+\begin{tabular}{l l}
+ CONS & ($\lambda$ $\mathit{a}$ ($\lambda$ $\mathit{b}$ ($\lambda$ $\mathit{f}$ (($\mathit{f}$ $\mathit{a}$) $\mathit{b}$))))\\
+ FIRST & ($\lambda$ $\mathit{c}$ ($\mathit{c}$ $\mathit{TRUE}$))\\
+ REST & ($\lambda$ $\mathit{c}$ ($\mathit{c}$ $\mathit{FALSE}$))\\
+\end{tabular}
+\end{document}

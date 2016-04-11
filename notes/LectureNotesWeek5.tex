@@ -207,4 +207,179 @@ To add m and n;\\
 ($\lambda$ m ($\lambda$ n ((m succ) n)))
 \end{flushleft}
 
+
+\section{Version 2 of these notes - need merging by hand!}
+
+\section{Evaluation Strategies}
+
+\newline A strange word to use 
+\newline We make the languages. 
+\newline
+
+
+The problem is that host languages have design defects, so evaluating them is confusing
+\newline \newline
+When and What and How parameters evaluated?
+\newline \newline
+When ?
+\begin{enumerate}
+    \item myFunc (a, b, c+d)
+    \begin{enumerate}
+        \item expr1 = a
+        \item expr2 = b
+        \item expr3 = c+d
+    \end{enumerate}
+\end{enumerate}
+\newline
+Evaluation Order Matters\newline
+\newline
+myFunc (a++, a++, a++), order matters in such cases.
+\newline \newline
+Are the parameters "left to right" or "right to left" ? 
+\newline \newline
+OR  We can not evaluate parameters at all and simply pass expressions to function body.
+(All programming languages do this for some things.)
+\newline \newline
+Racket is a strict language which means parameters evaluated.
+\newline \newline
+(define (fact n ))
+ (if (< n 1) 1 (* n (fact (- n 1))))
+\newline \newline
+********************************************
+\newline
+(define (my-if condition t f) 
+ (cond
+  (condition t)
+  (else f)
+ )
+)
+\newline
+\newline
+(define (fact n ))
+ (my-if (< n 1) 1 (* n (fact (- n 1))))
+ \newline
+ This is Wrong Evaluation !
+ \newline
+ \newline
+ It Works on \# lang lazy 
+ \newline 
+ \newline
+ output : 
+ \newline
+ \newline
+ (fact 7) 
+ \newline
+ 5040 
+ \newline 
+ \newline
+ In Java f(a) \&\& g(b) is not a boolean expression.
+ \newline \newline
+ They call it "short circuited evaluation". 
+ It is evaluated left to right and stop when we know the answer.
+ \newline
+ \newline
+\newline 
+A Practical Example :
+\newline
+\newline 
+While ( i < a.length \&\& a[i]!= 0)\{ \\
+    ..... i++; .... \\
+    \} \\
+\newline
+\newline
+What is wrong with next code template ?
+\newline \newline
+int i = 0;
+\newline
+While ( a[i]!= 0 \&\& i < a.length)\{ \\ 
+    ..... i++; .... \\
+    \}
+\newline
+\newline
+
+It gives Array Out Of Bounds Exception.
+\newline
+\newline
+Is Evaluation Strict or Not ? Sometimes Strict ?
+\newline
+\newline
+It is Sometimes Mostly Strict.
+\newpage
+\section{Environments}
+
+ Substition is not how Real World works. \\
+ (For real reasons of efficiency.) \\
+\newline
+\newline
+Our evaluation works the environment as additional parameter. When the evaluation evaluates an identifier, it looks up the value in the environment.
+\newline
+\newline
+\section{Data Definition}
+An environment is empty OR in identifier/ value pair plus an environment.
+\newline
+\newline
+look up Env identifier -- value or Error
+\newline
+\newline
+extend Env environment identifier value -- environment
+\newline
+\newline
+(fundef myfunc (a b c)\\
+(+ a (* bc))) \\
+function definition
+\newline
+\newline
+Example 
+\newline
+(myfunc 3 7 (+ 2 9))\\
+function application
+\newline
+\newline
+An evaluator takes the environment as additional parameter when the evaluator evaluates an identifier it looks up the value in the environment.
+\newline
+\newline
+(eval(extend Env (extend Env (empty Env, 'a, 3) 'b, 7) 'c, 11) (+ a (* b c)))
+\newline
+\newline
+(fundef f1 x (f2 4))   x -- acts like global environment \\     free identifiers
+\newline
+\newline
+(fundef f2 y (+x y))    identifier capture   \\
+ int f2 ( int y ) \} Broken Invalid \\ 
+ (f1 (f2 3)) \} wrong
+ \\
+\\
+this is called "dynamic scope" Dynamic Scope is a bug
+\newline
+\newline
+evaluate (f1, f2) - x gets bound to 42, y gets bound to 4
+\newline
+\newline
+(+ x y) looks up those values in the environment - The answer is 46 Wrong !
+\newline
+\newline
+The Solution (for now)-- When we apply a function, do not extend the current environment with formal parameter / value bindings. Extends the empty environment.
+\newline
+\newline
+\newline
+\newline
+M [x := N]
+\begin{enumerate}
+    \item M is an identifier 
+    \begin{enumerate}
+    \item M = x  then M[x:=N] is N
+    \item M = x  then M[x:=N] is M
+    \end{enumerate}
+    \item M is an application just do the two parts 
+    \item M is a function definition
+\end{enumerate}
+\newline
+\newline
+Case (a) is easy λyM1 , y = x \\
+Case (b) is hard λyM1 , y != x (not equal)
+\newline
+\newline
+
+
 \end{document}
+

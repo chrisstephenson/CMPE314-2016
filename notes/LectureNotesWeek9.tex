@@ -1,0 +1,136 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Laziness in Racket}
+\begin{flushleft}
+\underline{CONS} - We want it to be lazy\\
+How can we get laziness in an eager language?\\
+\begin{verbatim}
+ (lambda () <expr>) --> promise
+\end{verbatim}
+to force our promise to evaluate we just write \verb|(promise)|\\
+\begin{verbatim}
+ (delay (+ 2 3))
+\end{verbatim}
+\verb|define-syntax-rule| makes a function that operates on program text. It's a way of providing syntactic sugar. 
+\end{flushleft}
+
+\section*{Hamming Code}
+\begin{flushleft}
+ \underline{Hamming's Problem}\\
+ Produce a list of numbers only divisible by the prime numbers 3, 5, 7 and no other prime number in order 1 3 5 7 9 15 21 25 27 35
+\end{flushleft}
+
+\section*{Georg Contor}
+\begin{flushleft}
+The hotel with an infinite number of rooms is full.\\
+\bigskip
+\begin{tabular}{c | c c c c}
+  - & 1 & 2 & 3 & 4 \\
+  \hline
+  0 & / & / & / & / \\
+  1 & / & / & / &  \\
+  2 & / & / &  &  \\
+  3 & / &  &  &  \\
+\end{tabular}
+\bigskip
+\\What is our interpreter now going to look like?\\
+We have \underline{function values}. So we need a different way of naming functions.\\
+The only way we now have of creating names is as function parameters.\\
+This is cumbersome to write in the target language.\\
+Why don't we use the syntactic sugar of a Racket style let statement?
+\pagebreak
+\begin{verbatim}
+ (let
+    <def. list>
+    expr)
+    
+ <def. list> --> ((name1 expr1)
+                  (name2 expr2)
+                  (namen exprn)
+                  ...)
+                  
+ (let <def. list> expr) --> (let ((name1 expr1))
+                               (let ((name2 expr2))
+                                  (let ...
+                                     expr)))
+\end{verbatim}
+desugar2
+
+\verb|(let (name exp) program)| $ \xrightarrow{desugar} $ \verb|((lambda name program) expr)| \\
+
+\subsection*{Grammar for our target language:}
+\begin{itemize}
+ \item[] S $\rightarrow$ identifier
+ \item[] S $\rightarrow$ (S S)
+ \item[] S $\rightarrow$ ($\lambda$ identifier S)
+ \item[] S $\rightarrow$ (let (identifier S) S)
+ \item[] S $\rightarrow$ number
+ \item[] S $\rightarrow$ (+ S S) ...
+\end{itemize}
+When we want multi-parameter functions we can also do this by desugaring.\\
+\bigskip
+\verb|(lambda (| $v_1$ $v_2$ $v_3$ \verb|expr)| $\xrightarrow{desugar}$ \verb|(lambda| $v_1$ \verb|(lambda| $v_2$ \verb|(lambda| $v_3$ ... \verb|expr))))|\\
+\bigskip
+\verb|(a b c d)| $\xrightarrow{desugar}$ \verb|(((a b) c) d)|
+\end{flushleft}
+
+\subsection*{$\lambda$-calculus}
+\begin{flushleft}
+  \begin{itemize}
+   \item[] (($\mathit{I}$ $\mathit{M}$) $\mathit{N}$) $\rightarrow$ ($\mathit{M}$ $\mathit{N}$)
+   \item[] exponentiation = identity function
+  \end{itemize}
+The predecessor function is \underline{hard.}\\
+\verb|(PRED n)| what we want it \verb|n-1|\\
+Think of a pipeline\\
+\bigskip
+Let us program this transformation on pairs.\\
+$\mathit{[} \mathit{a,b} \mathit{]}$  $\rightarrow$ $\mathit{[} \mathit{b, (SUCC}$ B$) \mathit{]}$
+
+\begin{verbatim}
+ (lambda n
+    (FIRST ((n (lambda c
+                  ((CONS (REST c)) (SUCC (REST c))))))
+                  ((CONS ZERO) ZERO)))
+\end{verbatim}
+This is a \verb|PRED| function.\\
+\pagebreak
+\subsection*{Observation}
+\begin{tabular}{l c l}
+ ($\lambda$ x x)		& $\equiv$ & ($\lambda$ y y) ($\alpha$ transformation)\\
+ ($\lambda$ x ($\lambda$ y y))	& $\equiv$ & ($\lambda$ a ($\lambda$ b b)) ($\alpha$ transformation)\\
+ ($\lambda$ x ($\lambda$ y x))	& $\neq$   & ($\lambda$ a ($\lambda$ b b))\\
+\end{tabular}
+\bigskip
+\\What is the normal form?\\
+What is the essential difference?\\
+\end{flushleft}
+\bigskip
+\begin{flushleft}
+\subsection*{de Bruijn indices}
+\begin{tabular}{l c l}
+  ($\lambda$ x x)		& $\rightarrow$		& ($\lambda$ 1)\\
+  ($\lambda$ ($\lambda$ 1))	& $\rightarrow$		& ($\lambda$ ($\lambda$ 1))\\
+  ($\lambda$ ($\lambda$ 2))	& $\rightarrow$		& ($\lambda$ ($\lambda$ 1))\\
+\end{tabular}
+
+\end{flushleft}
+
+\end{document}

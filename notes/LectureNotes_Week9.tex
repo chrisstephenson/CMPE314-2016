@@ -1,0 +1,135 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\date{April,14}
+\maketitle
+
+\section{Laziness}
+\begin{flushleft}
+\textcolor{red}{\textbf{\underline{Cons:}}} We want it to be lazy. How can we get laziness in an eager language?\\
+
+\doublespacing
+($\lambda$ () \underline{$<$expr$>$}) $\rightarrow$ promise\\
+\doublespacing
+to force our promise to evaluate we just unite (promise)\\
+\doublespacing
+(delay \underline{(+ 2 3)})\\
+\doublespacing
+define-syntax-rule makes a function that operates on program text. It is a way of providing syntactic sugar.
+\end{flushleft}
+
+
+\subsection*{Hamming Code}
+\begin{flushleft}
+Reduce a list of numbers only divisible by the prime numbers 3,5,7 and no other prime number in order 1  3  5  7  9  15  21  25  27  35
+\end{flushleft}
+
+\subsection*{Georg Contor}
+\begin{flushleft}
+The hotel with a infinite number of room is full\\
+
+\doublespacing
+What is our interpreter now going to look like?
+
+\doublespacing
+We have \underline{function values}. So we need a different way of naming functions
+
+\doublespacing
+The only way we now have of creating names is as function parameters
+
+\doublespacing
+This is cumbersome to write in the target language.
+
+\doublespacing
+Why don't we use the syntactic sugar of a Racket style Let statement?
+\begin{verbatim}
+(let
+  <def list>
+    exp)
+    ...
+   <def list> ---> ((name1 expr1)
+                    (name2 expr2)
+                    (namen exprn)..)
+
+(let <def list> exp) ---> (let ((name1 expr1))
+                              (let ((name2 expr2)) 
+                                 (let... expr))))
+\end{verbatim}
+desugar 2\\
+(let (name exp) program) $\xrightarrow{desugar}$ (($\lambda$.name program) expr)
+\end{flushleft}
+
+\subsection*{Grammer for our target language}
+\begin{flushleft}
+S $\rightarrow$ identifier\\
+S $\rightarrow$ (S S)\\
+S $\rightarrow$ ($\lambda$ identifier S)\\
+S $\rightarrow$ (let (identifier S) S)\\
+S $\rightarrow$ number\\
+S $\rightarrow$ (+ S S)\\
+
+\doublespacing
+When we want to multi-parameter functions. We can also do this by desugaring. \\
+
+\doublespacing
+($\lambda$ (V1 V2 V3) expr) $\xrightarrow{desugar}$ ($\lambda$ V1 ($\lambda$ V2 ($\lambda$ V3 ... expr))))\\
+
+\doublespacing
+(a b c d) $\xrightarrow{desugar}$ (((a b) c) d)
+\end{flushleft}
+
+
+\subsection*{Lambda Calculus}
+\begin{flushleft}
+((I M) N) $\rightarrow$ (M N)\\
+\doublespacing
+exponentation = identity function
+
+\doublespacing
+The predecessor function is \underline{hard}\\
+(PRED n) what we want is n-1\\
+Think of a pipeline\\
+Let us this transformation an pairs\\
+\center
+[a b] $\rightarrow$ [b, (Succ B)]
+\begin{verbatim}
+(lambdan
+    (FIRST ((n (lambda c
+        ((CONS (REST c)) (SUCC (REST c))))))
+        ((CONS ZERO) ZERO))))
+        This is a PRED function
+\end{verbatim}
+\end{flushleft}
+
+\subsection*{Observation}
+\begin{flushleft}
+($\lambda$ x x) $\equiv$ ($\lambda$ y y) ($\alpha$ transformation)\\
+($\lambda$ x ($\lambda$ y y)) $\equiv$ ($\lambda$ a ($\lambda$ b b)) ($\alpha$ transformation)\\
+($\lambda$ \textcolor{red}{x} ($\lambda$ y \textcolor{red}{x})) $\neq$ ($\lambda$ a ($\lambda$ \textcolor{red}{b} \textcolor{red}{b}))\\
+ \doublespacing
+What is the normal form?\\
+($\lambda$ \textcolor{red}{x} ($\lambda$ y \textcolor{red}{x})) $\neq$ ($\lambda$ a ($\lambda$ \textcolor{red}{b} \textcolor{red}{b}))\\
+What is the essention difference
+\end{flushleft}
+
+\subsection*{de Burjin indices}
+\begin{flushleft}
+($\lambda$ x x) $\rightarrow$ ($\lambda$ 1)\\
+($\lambda$ ($\lambda$ 1)) $\equiv$ ($\lambda$ ($\lambda$ 1))\\
+($\lambda$ ($\lambda$ 2)) $\neq$ ($\lambda$ ($\lambda$ 2))
+\end{flushleft}
+\end{document}

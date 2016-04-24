@@ -1,0 +1,51 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{MnSymbol}
+\usepackage{soul}
+\usepackage{minibox}
+
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{HASKELL}
+\begin{itemize}
+ \item[1] Functional - function values are first class values\\
+  no  assignment, no side effects
+  \item[2] Lazy - example: all lists can be infinitive. No special treatment is needed for infinitive lists
+  \item[3] Sophisticated Type System - That allow generic programming\\
+  variable types
+  \item[4] Lots of interesting sugar
+\end{itemize}
+ \begin{flushleft}
+ \framebox(150,40){\minibox{Java is not the solution\\ Java is the \underline{problem.}}}
+ \end{flushleft}
+ 
+ \section*{$\beta$ Transformations}
+ \begin{flushleft}
+  Why did we object to identifier capture?\\
+  ($\lambda$ $\mathit{m}$ ($\lambda$ $\mathit{n}$ ((($\lambda$ $\mathit{x}$ ($\lambda$ $\mathit{y}$ ($\mathit{x}$ $\mathit{y}$))) $\mathit{m}$) $\mathit{n}$))) $\mathit{y}$) $\mathit{x}$) \\
+  ($\lambda$ $\mathit{m}$ ($\lambda$ $\mathit{n}$ ((($\lambda$ $\mathit{x}$ ($\lambda$ $\mathit{y}$ ($\mathit{x}$ $\mathit{y}$))) $\mathit{m}$) $\mathit{n}$))) $\mathit{y}$) $\mathit{x}$) \\
+  If we have identifier capture the result of the $\beta$ transformations depends on the order they are done in.\\
+  \bigskip
+  Is it the case that our definition of $\beta$ transformation (including the substitution rule) avoids the problem?\\
+  \bigskip
+  \section*{The Curch-Rosser Property aka the "Diamond Property"}
+  If a $\lambda$-sentence $\mathit{M}$ can be transformed by chains of $\beta$ transformations into sentences $\mathit{M_1}$ and $\mathit{M_2}$, then there exist (possibly empty) chains of $\beta$ transformations that transform $\mathit{M}$ and $\mathit{M_2}$ into some sentence $\mathit{M_3}$\\
+  \bigskip
+  \underline{A normal form:} is a $\lambda$ sentence in which no $\beta$ transformation is possible.\\
+  If Church-Rosser applies every sentence has \underline{at most one} normal form. \\
+  \underline{Proof:} Suppose $\mathit{M}$ has 2 normal forms, $\mathit{M_1}$ and $\mathit{M_2}$. But Church-Rosser tells us that there are chains of $\beta$ transformations that transform $\mathit{M_1}$ $\mathit{M_2}$ into $\mathit{M_3}$. But $\mathit{M_1}$ $\mathit{M_2}$ are normal forms, so these chains must be empty. So $\mathit{M_1}$ =  $\mathit{M_2}$ = $\mathit{M_3}$\\
+  \bigskip
+  (($\lambda$ $\mathit{x}$ $\mathit{y}$) (($\lambda$ $\mathit{x}$ ($\mathit{x}$ $\mathit{x}$)) ($\lambda$ $\mathit{x}$ ($\mathit{x}$ $\mathit{x}$))))\\
+ \end{flushleft}
+\end{document}

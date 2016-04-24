@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\date{April,21}
+\maketitle
+
+\section{Haskell}
+\begin{flushleft}
+\underline{(Simon Reyton-Jones)} $\rightarrow$ Glasgow Haskell Compiler new language \underline{F\#}
+\begin{itemize}
+\item Purely (no assignment, no side effects) Functional-function values are first class value.
+\item \underline{Lazy} (example: all lists can be infinite. No special treatment is needed for infinite lists)
+\item Sophisticated Type System (That allows generic programming) Variable types.
+\item Lots of interesting sugar.
+\end{itemize}
+\begin{flushleft}
+\begin{tcolorbox}
+Java is not the solution\\
+Java is the problem
+\end{tcolorbox}
+\bigskip
+\end{flushleft}
+	
+\subsection*{$\beta$ transformation}
+\begin{flushleft}
+Why did we object to identifier capture?\\
+\begin{flushleft}
+\doublespacing 
+($\lambda$ m (((($\lambda$ x (($\lambda$ y (x y))) m) n))))) y) x)\\ ($\lambda$ m (((($\lambda$ x (($\lambda$ y (x y))) m) n))) y) x)
+\end{flushleft}
+\textcolor{red}{If we have a identifier capture the result of the B transformations depends on the order they are done in.}
+\end{flushleft}
+\begin{flushleft}
+Is it the case that our definition of B transformation (including the substitution rule) avoids the problem?\\
+\bigskip
+\end{flushleft}
+
+\subsection*{The church-Rosse property a.k.a the Diamond property}
+\begin{flushleft}
+If a lambda- sentence M can be transformed by chains of B transformations into sentences M1 and M2, then there exists (possibly empty) chains of B transformations that transform M1 and M2 into some sentence M3.
+\end{flushleft}
+\begin{flushleft}
+A normal form is a lambda - sentence in which no B transformation is possible \\
+If Church-Rosser applies every sentence has \underline{at most} \underline{one} normal form.
+\end{flushleft}
+\begin{flushleft}
+\textbf{\underline{Proof}} Suppose M has 2 normal forms, M1 and M2. But Church Rosser tells us that these are chains of B      transformations that transform M1 and M2 into M3. But M1, M2 are normal forms, so these chains must be empty. So M1=M2=M3.
+\end{flushleft}
+\begin{flushleft}
+(($\lambda$ x y) (($\lambda$ x (x x)) ($\lambda$ x (x x))))
+\end{flushleft}
+\end{flushleft}
+\end{document}

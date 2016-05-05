@@ -1,0 +1,155 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage[T1]{fontenc}
+\usepackage{soul}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Haskell}
+Lots of people stealing ideas from Haskell. Example Java 8 , Scala.
+
+Microsoft Bought Simon Peyton-Jones Glasgow Haskell compiler to who makes their own Haskell -> F# Language
+
+It is invented because lots of different function language used in universities.
+\begin{itemize}
+
+ \item 1) Purely Functional -> function values
+are first class value
+- no assignments no side effects.
+
+ \item 2) Lazy (Example : all list can be infinite. No special treatment is needed for infinite list)
+
+ \item 3) Sophisticated Type System (That allows generic programming)
+Variable Types
+
+ \item 4) Lots of interesting sugar
+\end{itemize}
+
+I want you to write some programs on Haskell.
+\bigskip
+
+\textbf {"Java is no the solution
+Java is the problem"} \\
+
+
+Java doesn't really allow generic programming\\
+
+\section*{Programming Practice}
+\begin{verbatim}
+
+"HelloWorld"    
+
+4 + 5             
+
+((+) 4 5)
+
+(+) 4 5     
+
+fac 0 = 1
+
+fac n = fac(n-1) * n
+
+fac 0 1
+
+fac :: Integer -> Integer
+
+[1,2,3] 0:[1,2,3] [0,1,2,3]
+
+GHCI
+
+ones = 1 : []
+ones = 1 : ones
+CTRL C to stop infinite loop
+
+take 10 ones
+take 100 ones
+
+quicksort _ [] = []
+quicksort before (x:xs) = [y|y <- xs , before y x]
+              ++ [x] 
+              ++ [y | y <- xs , not (before y x)]
+            
+quicksort before (x:xs) = quicksort [y|y <- xs , before y x]
+quicksort before (x:xs) = quicksort before [y|y <- xs , not (before y x)]
+
+evens[] = []
+evens[x:xs] = x : odds xs
+odds[] = []
+odds(x:xs) = evens xs
+
+merge :: (a -> a -> Bool) -> [a] -> [a] -> [a]
+merge x [] = x
+merge [] x = x
+
+merge (x:xs)(y:ys) = ..... 
+merge before (x:xs)(y:ys)
+
+
+mergesort [] = []
+mergesort before [x] = [x]
+mergesort before (x : xs)(y : ys)
+         | before x y = x: merge before xs (y:ys)
+         | otherwise = y: merge before (x:xs) ys
+  \end{verbatim}
+
+\section*{Beta Transformations}
+
+ (( \lambda m ((\lambda n (((\lambda x (\lambda y (x y)) m) n)))) y) x) \\
+ ( \lambda m (\lambda n (((((\lambda x (\lambda y (x y))) m) n))) y) x)\\
+
+Why did we object to identifier Capture?
+\bigskip
+
+If we have identifier capture, the result of the B Transform depends on the order they are in .\\
+
+Is it the case that our definition of Beta Transformation (including substitution rule) avoids the problem.\\
+
+
+The Church-Rosser property a.k.a. \textbf{the Diamond Property}\\
+
+
+If a λ-sentence M can be transformed by chains of B transformations into sentences H1 and H2 , then there exist (possibly empty) chains of B transformations that transform M and M2 into some sentence M3.
+\bigskip
+
+\textbf{A Normal Form} , is a  sentence in which no B transformation is possible
+\bigskip
+
+If Church-Russer applies every sentence has at most one normal form.
+\bigskip
+
+Google Go -> Says Probably Be
+\bigskip
+
+\textbf{Proof }\\
+Suppose M has 2 normal forms Church- Russer tells us that the changes of Beta transformations that tansform M1 M2 into M3 but M1 M2 are normal forms so those chains must be empty So M1 = M2 = M3
+
+\bigskip
+((\lambda x y)(\lambda x (x x))(\lambda x (x x)))\\
+ ----- ---------------------\\
+1) y is answer | 2) Goes Infinite
+\bigskip
+
+\begin{flushleft}
+
+2 Different beta Transformations one goes to the infinite. According to Diamond Rule, Beta transform should start at the left most space (λx y) to give an answer.\\
+\end{flushleft}
+Lazy Definition  can find answer if there is a normal form .
+
+
+
+\end{document}

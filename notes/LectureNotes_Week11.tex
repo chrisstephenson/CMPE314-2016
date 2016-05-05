@@ -1,0 +1,82 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+Use map to write a Haskell function that multiplies every element of a possibly infinite list of integers by n.\\ \\
+\textbf{Contract}\\
+Mullist:: Integer$\rightarrow$ [Integer]$\rightarrow$ [Integer]\\
+\textbf{Description}\\
+ Mullist n l= map((*) n) l\\
+\tab[2.5cm] ($\lambda$ x x*n) l\\ \\
+This must be a function that takes an Integer and multiplies it by n\\ \\
+Type signature of map?\\
+ map:(x$\rightarrow$ y)$\rightarrow$[x] $\rightarrow$ [y]\\ \\
+What type signature * ?\\
+Integer$\rightarrow$ Integer$\rightarrow$ Integer\\
+
+\section{Exercise 3.59 in SICP}
+Infinite series  $ {a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + {a}_{3}{x}^{3} +.... $ \\ \\
+Treat an infite series as an infinite list[a0,a1..]\\ \\
+Consider $\int S dx$ .Can we write an integrate function?\\
+\textbf{Contract}
+[number] $\rightarrow$ [number]\\
+$\int$   $ {a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + {a}_{3}{x}^{3} +....$ dx \\
+\tab=k+a0x+a1x2/2+a2x3/3+a3x4/4.... \\ \\
+integrate s=1:zipWith\\
+integrate s=1:zipWith(/)s[1,2...]\\ \\
+Consider a function such that $\int f(x)dx$ = f(x)\\ \\
+funny=integrate funny\\
+sum s= head s:map((+)(head s))(sums(tail s))\\
+powers x=1: map(* x)(powers x)\\
+
+\cleardoublepage
+\section{The Most Beautiful Function}
+
+(LET ((x ($\lambda$x x)) (succ($\lambda$ n($\lambda$ f($\lambda$ x (f ((n f) x)))))\\
+
+(LET n(x ($\lambda$x x))\\
+
+(LET n(succ...))\\
+\tab$< body >$)\\
+
+(LET n(v $< expr >$)) $< body >$)\\
+
+\tab(($\lambda$ $\upsilon$ $< body >$) $< expr >$)\\
+
+we want to write factorial\\
+
+(LET(fac($\lambda$ n(((IF (ZERO? n)) ONE)(fac(PRED n)))))\\
+
+All defined in LETS\\
+
+(($\lambda$ fac(fac SEVEN))($\lambda$ n((IF(ZERO? n)ONE)(fac(PRED n))))\\
+
+Our factorial function needs to look like this\\
+\tab($\lambda$ fac($\lambda$ n....fac....))\\
+
+Then we need to make a closure of fac applied to itself\\
+
+\tab(($\lambda$ f (($\lambda$ x(f(x x)))($\lambda$ x(f(x x))))) F)\\
+
+beta transform$\rightarrow$(($\lambda$ x (F(x x))($\lambda$ x(F(x x)))) = (YF)\\
+
+\tab(F(($\lambda$ x(F (x x))($\lambda$ x (F (x x))))=F(YF)\\
+
+The Y combinator\\    
+
+\end{document}

@@ -1,0 +1,118 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage{color}
+\newcommand{\tab}[1]{\hspace{0.12\textwidth}\rlap{#1}}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\date{May,5}
+\maketitle
+
+\section*{Using Map for Haskell Function}
+\begin{flushleft}
+Use map to write a Haskell function that multiplies every element of a possibly infinite list of integers by n.\\
+\bigskip
+
+{\large $\bigstar$ mulList :: Integer $\rightarrow$ [Integer] $\rightarrow$ [Integer]\\
+\vspace*{0.2cm}
+$\bigstar$ mulList n l= map ((*) n) \underline{$\ell$}}\\
+\bigskip
+{\LARGE \tab{$\downarrow$}}\\
+\bigskip
+This must be a function that takes an integer and multiplies it by n.\\
+\vspace*{0.8cm}
+\emph{\begin{large}
+Type signature of map?\\
+$\succ$ map :: (x $\rightarrow$ y) $\rightarrow$ [x] $\rightarrow$ [y]\\
+\bigskip
+Type signature of x ?\\
+$\succ$ Integer $\rightarrow$ Integer $\rightarrow$ Integer\\
+\end{large}}
+\bigskip
+\vspace*{1cm}
+{\large \textbf{\underline{Exercise 3.59} in SICP}}\\
+\vspace*{0.5cm}
+{\normalsize \textbf{\underline{Infinite series}}}\\
+\vspace*{0.5cm}
+Infinite series  \emph{{\large S}= $ {a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + {a}_{3}{x}^{3} +\ldots $} treat an infinite series as an infinite list \emph{[a0,a1...]}\\
+\bigskip
+\hspace{0.9cm}\textbf{Consider} {\large $\int_{y}^{x} S dx$}. Can we write an \underline{integrate} function?\\
+\bigskip
+\hspace{0.9cm}\textbf{Contract}
+[Number] $\rightarrow$ [Number]\\
+\begin{large}
+$$\int_{0}^{x} {a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + {a}_{3}{x}^{3} +\ldots dx $$ \\
+$$= {a}_{0}x + {a}_{1}\dfrac{x^{2}}{2} + {a}_{2}\dfrac{x^{3}}{3} + {a}_{3}\dfrac{x^{4}}{4}$$
+\end{large} 
+\cleardoublepage
+\begin{flushleft}
+\emph{Integrate s = 1 : zipWith\\
+\bigskip
+Consider a function such that $\int f(x)dx$ = f(x)\\
+\tab funny = integrate funny\\
+\bigskip
+powers x = 1 : map($\ast$ x) (powers x)}\\
+\vspace*{1cm}
+\textbf{\underline{ZipWith Signature: }}\\
+\bigskip
+(a $\rightarrow$ b $\rightarrow$ c) $\rightarrow$ [a] $\rightarrow$ [b] $\rightarrow$ [c]
+\end{flushleft}
+\bigskip
+\subsection*{The most beautiful function}
+\begin{flushleft}
+(LET n ($\nu$ $< expr >$) $< body >$)\\
+\bigskip
+{\LARGE \tab{$\downarrow$ desugar }}\\
+\bigskip
+(($\lambda$ $\nu$ $< body >$) $< expr >$)\\
+\bigskip
+\textcolor{red}{(LET (fac} ($\lambda$ n (((\underline{IF} (\underline{ZERO?} n)) \underline{ONE}) (\underline{fac} (\underline{PRED} n)))))\\
+\bigskip
+{\LARGE \tab{$\swarrow\downarrow\searrow$}}\\
+\bigskip
+\textcolor{red}{(fac SEVEN) all defined in LETS}\\
+\bigskip
+
+{\LARGE \tab{$\Downarrow$ desugar}}\\
+\bigskip
+(($\lambda$ fac (fac SEVEN)) ($\lambda$ n ((IF (ZERO? n) ONE) (\textcolor{red}{fac} (PRED  n))))\\
+
+\vspace*{1cm}
+Our factorial function needs to look like this: \\
+( $\lambda$ fac ($\lambda$ n ..... fac .....))\\
+\vspace*{1cm}
+Then we need to make a closure of fac applied to \underline{itself}\\
+\vspace*{0.4cm}
+(\underline{($\lambda$ f (($\lambda$ x (f (x x))) ($\lambda$ x (f (x x)))))} F)\\
+\textcolor{red}{\tab{y}}\\
+\bigskip
+{\LARGE \tab{$\downarrow$ $\beta$}}\\
+\bigskip
+(($\lambda$ x (F (x x)) ($\lambda$ x (F (x x))))\\
+\bigskip
+{\LARGE \tab{$\downarrow$ $\beta$}}\\
+\bigskip
+(F (($\lambda$ x (F (x x)) ($\lambda$ x (F (x x)))) $\equiv$ F(YF)\\
+\vspace*{1.5cm}
+The \underline{Y combinator}  
+
+
+
+
+	
+\end{flushleft}
+\end{flushleft}
+\end{document}

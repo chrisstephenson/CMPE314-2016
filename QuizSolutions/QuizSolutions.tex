@@ -1,0 +1,148 @@
+
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - QUIZE SOLUTIONS}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+\textbf{QUIZ 3}\\ 
+\textbf{Question 1}\\
+$\Lambda$ $\rightarrow$ V\\
+$\Lambda$ $\rightarrow$($\lambda$ V $\Lambda$)\\
+$\Lambda$ $\rightarrow$($\Lambda$ $\Lambda$)\\
+V$\rightarrow$a\\
+V$\rightarrow$b\\
+V$\rightarrow$VV\\
+\textbf{Solution 1}\\
+((z b)a)$\rightarrow$ valid\\
+($\lambda$ (b) z)$\rightarrow$ invalid\\
+($\lambda$ a b)$\rightarrow$ valid\\
+(b($\lambda$ z b))$\rightarrow$ valid\\
+(($\lambda$ z b) z)$\rightarrow$ valid\\
+((z b a) a)$\rightarrow$ invalid\\
+ab$\rightarrow$ valid\\
+(b)$\rightarrow$ invalid\\
+((z a))$\rightarrow$ invalid\\
+(a b z)$\rightarrow$ invalid\\
+(a($\lambda$ a ($\lambda$ a a)))$\rightarrow$ valid\\
+z $\rightarrow$valid\\
+b z$\rightarrow$ invalid\\
+(a b)$\rightarrow$ valid\\
+(($\lambda$ z (z z) z)$\rightarrow$ valid\\
+(($\lambda$ a (a (b z a))) z)$\rightarrow$ invalid\\
+\textbf{Question 2}\\
+Write a set of tests for the procedure performing substitıtion in your project 03.\\
+\textbf{Solution 2} \\
+(test (subst (numC 5) 'x (plusC (idC 'x) (numC 3))) (plusC (numC 5) (numC 3)))\\
+(test (subst (numC 6) 'x (multC (idC 'x) (idC 'x))) (multC (numC 6) (numC 6)))\\
+\textbf{Question 3}\\
+In chapter 5 of the text book, what are the steps in evaluating a function application\\
+\textbf{Solution 3}\\
+(funapp (id=) (exp))\\
+1)Look up the function name in the store of function definitions.\\
+2)Evaluate the actual paramater.\\
+3)Substituon the actual paramater for the formal parameter in body of definition.\\
+4)Evaluate body.\\
+\maketitle
+\textbf{QUIZ 5}\\
+\textbf{Question 1}\\
+ $\Lambda$$\rightarrow$V\\
+ $\Lambda$$\rightarrow$($\lambda$ V $\Lambda$)\\
+ $\Lambda$$\rightarrow$( $\Lambda$ $\Lambda$)\\
+V$\rightarrow$a\\
+V$\rightarrow$b\\
+V$\rightarrow$z\\
+V$\rightarrow$VV\\
+\textbf{Solution 1}\\
+((z b) a)$\rightarrow$ valid\\
+((b z))$\rightarrow$ invalid\\
+(z b a)$\rightarrow$ invalid\\
+($\lambda$ (a) a)$\rightarrow$ invalid\\
+($\lambda$ z b)$\rightarrow$ valid\\
+(a ($\lambda$ b z))$\rightarrow$ valid\\
+ab$\rightarrow$ valid\\
+b $\rightarrow$valid\\
+z a $\rightarrow$invalid\\
+(z b)$\rightarrow$ valid\\
+(z) $\rightarrow$invalid\\
+(($\lambda$ b a) z)$\rightarrow$ valid\\
+((a b a) z)$\rightarrow$ invalid\\
+(a a($\lambda$ z ($\lambda$ z z)))$\rightarrow$ valid\\
+(($\lambda$ b (a b)) z)$\rightarrow$ valid\\
+(($\lambda$ b (a (b))) z)$\rightarrow$ invalid\\
+\textbf{Question 2}\\
+Calculate the set of Free Identifiers, which may be empty, for each of the $\lambda$-calculus sentences below.\\
+Write the set in curly brackets, so {a, b} represents the set containing a and b.\\
+\textbf{Solution 2}\\
+($\lambda$ x ($\lambda$ y ($\lambda$ z(($\lambda$ x (y y))($\lambda$ y (x x))))))$\rightarrow$ \{\} \\
+(($\lambda$ b b) b)$\rightarrow$ \{b\} \\
+a $\rightarrow$ \{a\} \\
+($\lambda$ x ($\lambda$ y (($\lambda$ x (y y))($\lambda$ y (x x)))))$\rightarrow$ \{\} \\
+(($\lambda$ b c) b)$\rightarrow$\{c b\} \\
+($\lambda$ x (y y))($\lambda$ y (x x)))$\rightarrow$\{x y\} \\
+($\lambda$ y($\lambda$ x(y y)))$\rightarrow$\{\} \\
+($\lambda$ b ((a b)(b c)))$\rightarrow$\{a c\} \\
+($\lambda$ x (x x))($\lambda$ x(x x)))$\rightarrow$\{\} \\
+((a b)(b c))$\rightarrow$\{a b c\} \\
+(($\lambda$ x(x x))($\lambda$ y (y y)))$\rightarrow$\{\} \\
+(a b)$\rightarrow$ \{a b\} \\
+($\lambda$ a a)$\rightarrow$ \{\} \\
+($\lambda$ x ($\lambda$ y (y y)))$\rightarrow$\{\} \\
+($\lambda$ a b)$\rightarrow$ \{b\} \\
+\textbf{Question 3}\\
+Write a tail recursive factorial program that calculates the factorial of 7 using your target language from project04.\\
+\textbf{Solution 3}\\
+(define (fact p acc)\\
+  \tab(cond\\
+   \tab\tab $[$ (=p 1) acc ] \\
+    \tab\tab$[$else (fact (-p 1)(*acc p))]\\
+))\\
+\maketitle
+\textbf{QUIZ 7}\\ 
+\textbf{Question 1}\\
+Calculate the set of Free Identifiers, which may be empty, for each of the lambda-calculus sentences below.\\
+Write the set in curly brackets, so {a, b} represents the set containing a and b\\
+\textbf{Solution 1}\\
+(($\lambda$ x(x x))($\lambda$ y (y y)))$\rightarrow$ \{\} \\
+(a b)$\rightarrow$ \{a b\} \\
+($\lambda$ a a)$\rightarrow$ \{\} \\
+($\lambda$ x ($\lambda$ y (y y)))$\rightarrow$ \{\} \\
+($\lambda$ a b)$\rightarrow$ \{b\} \\
+($\lambda$ x ($\lambda$ y ($\lambda$ z(($\lambda$ x (y y))($\lambda$ y (x x))))))$\rightarrow$\{\} \\
+(($\lambda$ b b) b)$\rightarrow$ \{b\}\\
+a $\rightarrow$ \{a\}
+($\lambda$ x ($\lambda$ y (($\lambda$ x (y y))($\lambda$ y (x x)))))$\rightarrow$ \{\} \\ 
+(($\lambda$ b c) b)$\rightarrow$ \{c b\} \\
+($\lambda$ x (y y))($\lambda$ y (x x)))$\rightarrow$ \{x y\} \\
+($\lambda$ y($\lambda$ x(y y)))$\rightarrow$\{\} \\
+($\lambda$ b ((a b)(b c)))$\rightarrow$ \{a c\} \\
+($\lambda$ x (x x))($\lambda$ x(x x)))$\rightarrow$ \{\} \\
+((a b)(b c))$\rightarrow$ \{a b c\} \\
+\textbf{Question 2}\\
+Calculate the results ıf a beta-transformation on each of the lambda-sentences below.\\ 
+You only need to perform one transformtion even if a further transformation becomes possible.\\
+\textbf{Solution 2}\\
+(($\lambda$ x($\lambda$ y(y x))) y)$\rightarrow$ ($\lambda$ y (y y))\\
+(($\lambda$ x($\lambda$ y(y x))) z)$\rightarrow$ ($\lambda$ y (y z))\\
+(($\lambda$ x (x x))($\lambda$ y (y y))) $\rightarrow$ ($\lambda$ y (y y))($\lambda$ y (y y)))\\
+(($\lambda$ a (b b)) c)$\rightarrow$ (b b)\\
+(($\lambda$ z (z z) p))(q($\lambda$ x x)))$\rightarrow$ (((q ($\lambda$ x x))(q ($\lambda$ x x))) p)\\
+
+
+
+   
+
+\end{document}

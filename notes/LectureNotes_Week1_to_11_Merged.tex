@@ -1,0 +1,1371 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{color}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\begin{flushleft}
+\textcolor{blue}{\textbf{{\huge Week 1 Lecture Notes}}}
+\section*{Quiz \#1 Answers}
+\subsection*{Question\#1}
+\subsubsection*{Language:}
+  \begin{itemize}
+        \item A finite alphabet
+        \item A set of strings of the symbols in the alphabet (usually infinitive)
+   \end{itemize}
+ 
+\subsubsection*{A Grammar:}
+  \begin{itemize}
+   \item A set of productions (rewriting rules)
+   \item A finite alphabet of terminal symbols
+   \item A finite set of non-terminal symbols\\
+\vspace*{0.2cm}
+\item[] \tab{\LARGE $\bullet$ $\rightarrow$ $\bullet$ }\\
+\bigskip
+(Something goes to something)
+   \item A sentence symbol S
+  \end{itemize}
+
+[a] // S $\rightarrow$ a // S $\rightarrow$ aS
+  \begin{itemize}
+
+   \item $S \rightarrow number$\\
+   $S \rightarrow S + S$\\
+   $S \rightarrow S * S$\\
+   $S \rightarrow (S)$\\
+   alphabet = [+, *, (), number]
+  
+  \end{itemize}
+  
+
+\subsection*{Question\#2}
+
+  \begin{verbatim}
+    (define (interp [a : ArithC]) : number
+        (type-case ArithC a
+            [numC (n) n]
+            [plusC (l r) (+ (numC-n l) (numC-n r))]
+            [multC (l r) (* (numC-n l) (numC-n r))]))
+  \end{verbatim}
+  
+  \begin{verbatim}
+    In this code;
+    (+ 4 3) works but,
+    (+ (* 3 7) (+ 4 2)) crashes
+  \end{verbatim}
+  
+  When we convert numC to interp, it turn to work.
+
+  \begin{verbatim}
+    (define (interp [a : ArithC]) : number
+        (type-case ArithC a
+            [numC (n) n]
+            [plusC (l r) (+ (interp l) (interp r))]
+            [multC (l r) (* (interp l) (interp r))]))
+  \end{verbatim}
+  
+  
+\section*{Programming Languages}
+\begin{tabular}{c c}
+ \textbf{Programming Languages} & \textbf{Kinds of Programming Languages}\\
+ \begin{tabular}{ l c r }
+    Java & Assembly & Swift \\
+    Python & C & Prolog \\
+    Ruby & C\# & Fortran \\
+    Objective-C & Racket & R \\
+    Lisp & Haskell & Whitespace \\
+    Javascript & Pascal & Giuseppe \\
+    Scala & HTML & Ada \\
+    Pick & Perl & XML \\
+    SQL & BASH & XSDL \\
+    Scratch &  &  \\
+  \end{tabular}
+  &
+  \begin{tabular}{ c }
+    Markup Language \\
+    Functional \\
+    Object oriented \\
+    Procedural \\
+    Scripting \\
+    Graphical \\
+    Experimental \\
+    Declarative \\
+    Machine \\
+  \end{tabular}
+\end{tabular}
+
+
+\begin{flushleft}
+The code below is valid in Java and also valid in C. \\
+What value does the function/method \verb|funny2| returns?
+
+\begin{verbatim}
+ int funny(int a, int b){
+    return a + 2 * b;
+ }
+ 
+ int funny2(){
+    int a = 2;
+    return funny(a++, a++);
+ }
+\end{verbatim}
+
+In this example the value returned in Java and C are different. Java returns 8 but C returns 7.\\
+This situation caused by the compilers of this languages. In \verb|funny(a++, a++)| statement Java starts from left \verb|a++| but C starts from right \verb|a++|.\linebreak
+
+Let us consider this now\\
+1000000000 + 2000000000\\
+"1000000000" + "2000000000"\\
+\bigskip
+For first one Java return negative. Because it is accepted numbers as int. And maximum int value is 2,147,483,647.\\
+In the second one Java concatenates the two strings like "10000002000000" (But some languages adds them)\\
+\vspace*{0.5cm}
+\begin{verbatim}
+int not an Integer // Integer a box in which is not an Integer
+                      BigInt - It is not big and it is not an int
+\end{verbatim}
+\pagebreak
+\subsection*{\underline{Syntactic Sugar}}
+\begin{flushleft}
+\begin{verbatim}
+Loops --> while       |   for(<init>; <continue>; <steps>){
+          Do while    |      <body>
+          for         |    }
+          foreach     |     <init>
+                      |        while(<continue>){
+                      |           <body>
+                      |         <step>
+                      |   }
+
+\end{verbatim}
+\end{flushleft}
+\begin{flushleft}
+All programming languages are data formats for data input to other programs.\\
+\bigskip
+\boxed{Java}\boxed{Byte Code}\\
+\hspace{0.6cm}\boxed{Code}\tab\boxed{C}\boxed{Machine Code}\\
+\hspace{3cm}\boxed{C}\\
+\vspace*{0.6cm}
+\hspace{0.3cm}Bootstrapping $\rightarrow$ self compilation
+\vspace*{1cm}\\
+Program text $\xrightarrow{parse}$ Data Structure $\xrightarrow{interp/eval}$ Answer\\
+\end{flushleft}
+\begin{verbatim}
+ (eval (parse '(+ 2 (* 3 4))))
+\end{verbatim}
+Parsing is common to all compilers/interpreters
+\end{flushleft}
+\end{flushleft}
+\begin{flushleft}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\textcolor{blue}{\textbf{{\huge Week 2 Lecture Notes}}}
+\section*{Function/Methods}
+\subsubsection*{Roberts on methods:}
+  \begin{itemize}
+        \item "Hiding complexity"
+		\item "Tools for programmers"
+		\item "Method calls as expressions"
+		\item "Method calls as messages"
+   \end{itemize}
+ 
+\begin{flushleft}
+The calling mechanism is that the actual parameters are copied to the formal parameters and the code is executed.
+\emph{\color{red} it's a lie!}\\
+
+\end{flushleft}
+\subsection*{How methods are used}
+Within a method you can call another method.(We have certainly done that $\rightarrow$ example Math-min)
+
+\begin{flushleft}
+$\Rightarrow {\color{red}Missing:}$
+You can call a method in the expression for the actual parameters. $\rightarrow$ myMethod(Math.max(a,b));
+\end{flushleft}
+\begin{flushleft}
+ Used for decomposition - Break a problem into pieces
+ \end{flushleft} 
+\begin{flushleft}
+Used for algorithms - abstraction (example binary search)
+\end{flushleft}
+
+
+\newcommand*{\Comb}[2]{{}^{#1}C_{#2}}%
+
+\textbf{\begin{center}
+$\binom nr=\frac{n!}{(n-r)! r!}$
+$=\frac{15!}{(15-2)!2!}= 105$
+\end{center}}
+
+We wrote \underline{a calculator} to make a programming language, we need to add \underline{abstraction}. (= generalisation. In place of numbers we will use \underline{identifiers} in our calculations.)
+\begin{flushleft}
+Example: 
+\end{flushleft}
+\begin{verbatim}
+ int square(int x){ 
+  return x * x;
+ }
+\end{verbatim}
+$Note:$ x is formal parameter and bound identifier
+
+
+\begin{flushleft}
+\underline{application}
+\end{flushleft}
+\begin{verbatim}
+ println(" " + square(7));
+\end{verbatim}
+$Note:$ "7" is the actual parameter
+
+\begin{flushleft}
+\tab{We evaluate the body of the function by substituting the \underline{actual} parameter for the formal parameter in the body of the function.}\\
+\end{flushleft}
+\tab{We need to extend our data definition.}\\
+\tab{We need to add;}\\
+\begin{itemize}
+ \item Function definition
+ \item Function application
+\end{itemize}
+\tab{To start with we will keep our function definitions seperate.}\\
+\tab{Our functions will have a seperate \underline{namespace}.}\\
+\tab{Our interpreter will have two inputs - a list of function definitions - an expression.}\\
+(Which may include function applications)
+  
+\subsection*{What does a function have?}
+\begin{itemize}
+ \item A formal parameter - name (identifier)
+ \item A body - expression (in our extended version)
+ \item A name - identifier (in the function name namespace)
+ \item Function name - identifier in the function name namespace
+ \item Actual parameter - identifier
+\end{itemize}
+\tab{Extend our expression data definition.}\\
+\tab{We need to add two more variants.}\\
+\begin{itemize}
+ \item Function application
+ \item Identifier
+\end{itemize}
+\tab{We need to extend the interpreter to deal with the two new variants in the data definition.}
+\begin{itemize}
+ \item Identifier $\rightarrow$ error
+ \item Function application\\
+ \verb|(apply (find-function function-list function-name) actual-parameter)|
+\end{itemize}
+\tab{Statement of purpose for apply, substitute the actual parameter for the formal parameter everywhere in the body of the function, then evaluate the result.}
+
+\begin{verbatim}
+ (define '(apply function-definition actual-parameter){
+  (interp (subst (function-definition formal-parameter) actual-parameters))
+ })
+\end{verbatim}
+
+
+
+\begin{flushleft}
+\textbf{What does subst do?}\\
+\end{flushleft}
+name expression expression $\rightarrow$ expression
+
+\begin{flushleft}
+\underline{Template:}\\
+\end{flushleft}
+\begin{flushleft}
+number $\rightarrow$ number\\
+arith-expression $\rightarrow$ same expression but subst the operands\\
+identifier $\rightarrow$ if the identifier is the identifier to be substitued, we replace it\\
+function application $\rightarrow$ function application, but subst the actual parameter\\
+\end{flushleft}
+\textbf{Valid sentences:}\\
+$\mathit{a}$\\
+($\mathit{a}$ $\mathit{b}$)\\
+($\lambda$ $\mathit{x}$ $\mathit{x}$) - informally this is the identity function\\
+{($\mathit{a}$ $\mathit{b}$ $\mathit{c}$)} - {not valid}
+
+($\lambda$ $\mathit{f}$ ($\lambda$ $\mathit{x}$ ($\mathit{f}$ 
+($\mathit{f}$ $\mathit{x}$)))) - a function doubler\\
+\end{flushleft}
+
+\begin{flushleft}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\textcolor{blue}{\textbf{{\huge Week 3 Lecture Notes}}}
+\subsubsection*{A program that looks the same but evaluates to two different answers answers should worry us.}
+  \begin{itemize}
+        \item "Integrated Development Environment"
+		\item "Unintegrated Development Environment"
+   \end{itemize}
+
+
+\begin{verbatim} 
+ int funny(int a, int b){ 
+  return 2 * a + b;
+ }
+ 
+ int haha(){
+  int z = 2;
+  return funny(z++, z++);
+}
+\end{verbatim}
+%
+
+\center z++ $\rightarrow$ side effect\
+ 
+\begin{flushleft}
+The ++ post operator produces a value the same as the value of its operand. But it changes the subsequent value of the operand as a \emph{\color{red} side effect //alligator}\\
+\end{flushleft}
+
+\begin{flushleft}
+In a program using a for loop to process an array we have unnecessary(maybe) stale.
+\end{flushleft}
+
+\begin{flushleft}
+Look at Hodoop(big data) $\rightharpoonup$ map reduce (must be stateless)
+\end{flushleft}\
+
+\center text(parse)$\rightarrow$ first rep(desugar)$\rightarrow$ second rep(eval)$\rightarrow$ evaluation\
+
+
+\center "desugaring" = "macro processing"\
+
+\begin{flushleft}
+Example:
+\end{flushleft}
+
+\begin{flushleft}
+In Racket, cond is designed into a series of nested if statements.\\
+What does our program evaluation look like ?
+$(eval(desugar(parse '(* (-3)(+ 7 8)))))$
+\end{flushleft}
+
+
+\begin{flushleft}
+The syntax of the $\lambda$-calculus (my idiosyncrotic version)
+\end{flushleft}
+
+\begin{flushleft}
+\center
+$\Lambda\rightarrow\upsilon$\
+\center
+$\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)$\
+\center
+$\Lambda\rightarrow(\Lambda$
+$\Lambda)$
+\
+\end{flushleft}
+
+\begin{flushleft}
+\subsubsection*{Informal meaning}
+\end{flushleft}
+\begin{flushleft}
+
+$\Lambda\rightarrow\upsilon\Longrightarrow$identifier
+
+$\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)\Longrightarrow$anonymous function definition
+
+$\Lambda\rightarrow(\Lambda$
+$\Lambda)\Longrightarrow$function application
+\end{flushleft}
+
+
+\begin{verbatim} 
+ int funny(int y){ 
+  return y;
+ } 
+\end{verbatim}
+%
+\begin{flushleft}
+(($\Lambda$ x x)(a b)) // x is bond and a,b are free
+\end{flushleft}
+
+\begin{flushleft}
+A "complete" program will have no "free" identifiers\\
+A part of that program may have free identifiers
+\end{flushleft}
+
+\begin{flushleft}
+If M is an identifier, x $FI(M)={x}$\\
+If M is an application (M1,M2) $FI(M)=FI(M1) U FI(M2)$\\
+If M is an definition ($\Lambda$ x M1)
+\end{flushleft}
+
+\begin{flushleft}
+FI[($\lambda$ x ($\lambda$ y x)]={}\\
+FI[($\lambda$ y x)]={x}
+\end{flushleft}
+
+
+\begin{flushleft}
+\subsubsection*{Informally}
+T= ($\lambda$ x ($\lambda$ y x)) \\
+(T a) $\rightarrow$ ($\lambda$ y a) // direction with $\beta$\\
+((T a) b) $\rightarrow$ a // direction with $\beta$
+\end{flushleft}
+
+\begin{flushleft}
+F=($\lambda$ x ($\lambda$ y y))\\
+((F a) b) $\rightarrow$ b // direction with $\beta$
+\end{flushleft}
+
+\end{flushleft}
+
+
+
+\begin{flushleft}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\textcolor{blue}{\textbf{{\huge Week 4 Lecture Notes}}}
+\section*{Lies and Equality (In Java and other languages)}
+"=" does not mean "equals" \\
+"\&" does not mean "and"\\
+"$||$" does not mean "or"\\   
+"!" does not mean "surprise"\\
+int does not mean Integer\\
+BigInteger does not mean BigInteger\\              
+\end{flushleft}
+
+\begin{flushleft}
+We use == for "equals"\\
+we use \&\& for logical and\\
+We use $||$ for logical or\\
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+It means a 32 bit two's complement quality (now most compilers are 64 bit)
+\end{flushleft}
+
+\begin{verbatim}
+If I declare MyClass a;
+a is not necessarily an object
+of class MyClass.
+\end{verbatim}
+%
+
+\subsubsection*{Equality What does == mean ?}
+    
+\begin{verbatim}
+class Equality {
+public static void main (String[] args) {
+  MyInteger a = new MyInteger(42);
+  MyInteger b = new MyInteger(42);
+  MyInteger c = new MyInteger(43);
+  MyInteger d = c;
+  String s1 = "Chris";
+  String s2 = "Chris";
+  System.out.println("\n a = " + a + ",b = " + b + "\n");
+  System.out.println("\n a == b is " + (a == b) + "\n");
+  System.out.println("\n s1 == s2 is " + (s1 == s2) + "\n");
+  System.out.println("\nd = " + d + "\n");
+  System.out.println("\n c == d is " + (c == d) + "\n");
+  c.setV(44);
+  System.out.println("\n c = " + c +  "\n");
+ }
+}
+
+class MyInteger {
+  int value;
+  MyInteger (int v) {
+    value = v;
+  }
+  public String toString () {
+    return "" + value;
+  }
+  public void setV (int v) {
+    value = v;
+  }
+ }
+\end{verbatim}    
+
+\doublespacing   
+\begin{flushleft}
+  It does not mean 'equal in value'(necessarily) 
+  \end{flushleft}  
+  
+  \begin{verbatim}
+  String a= "Chris";
+  String b= "Chris";
+  
+  Strings are immutable
+  \end{verbatim}
+   
+    
+\begin{flushleft}
+Our program
+\begin{verbatim}
+'((fundef factorial n (if2 n 1(* n (factorial (- n 1))))) (factoaial 3))
+\end{verbatim}
+\end{flushleft}
+$\downarrow$
+\begin{verbatim}
+parse + desugar
+  fdc[name:symbol][arg:symbol][body:s-expression]
+  (fdc 'factorial 'n (if(idC n)(numC 1))(numC 1))(multC(numC n)
+  				(appC factorial (sub C(idC n)(num 1)
+  				
+  		(appC 'factorial (numC 3))
+\end{verbatim}
+
+\textbf{(if2C \st{(idC 'n)}(numC 1)(mulC \st{(idC 'n)}(appC 'factorial(subC \st{(idC 'n)}(numC 1)))\\
+(idc 'n) $\rightarrow$ (numC 3)
+}\\
+
+
+\[ \left( \begin{array}{ccc}
+remember & to \\
+multiply & by & 3 \\
+\end{array} \right)\] 
+
+\[ \left( \begin{array}{ccc}
+remember & to \\
+multiply & by & 2 \\
+\end{array} \right)\]
+
+\[ \left( \begin{array}{ccc}
+remember & to \\
+multiply & by & 1 \\
+\end{array} \right)\] \begin{center}
+$\downarrow$
+\end{center}
+
+\begin{center}
+(mulC \st{(idC 'n)}(appC 'factorial(subC \st{(idC 'n)}(numC 1)))\\
+(idC 'n)$\rightarrow$(numC 3)
+\end{center}
+
+
+\subsection*{Transformation}
+\begin{flushleft}
+($\lambda$ x M) $\equiv$ ($\lambda$ y M [x:=y])\\
+$\rightarrow$ [x:=y ]$\rightarrow$ substitude y for x troughout M
+\end{flushleft}
+
+\textbf{\begin{flushleft}
+$\curvearrowleft$ transformation(optional)
+\end{flushleft}}
+
+
+\begin{flushleft}
+($\lambda$ x (f x)) $\overrightarrow{\curvearrowleft}$ f\\
+(F y) $\rightarrow$ (f y)\\
+(F z) $\rightarrow$ (f z)\\
+(F w) $\rightarrow$ (f w)\\
+\end{flushleft}
+
+\textbf{\begin{flushleft}
+$\beta$ transformation
+\end{flushleft}}
+
+\begin{flushleft}
+(($\lambda$ x M) y) $\overrightarrow{\beta}$ M [x:=N]\\ 
+($\lambda$ x ($\lambda$ y (y x))) $\equiv$ F
+\end{flushleft}
+
+\begin{flushleft}
+Example \\
+((\underline{F M)} N) $\overrightarrow{\beta}$ ((\underline{$\lambda$ y (y M)})N)\\
+................ $\overrightarrow{\beta}$ (N M)
+\end{flushleft}
+
+\begin{flushleft}
+\underline{Some example: } Let M=y N=x \\
+((F y) x) $\overrightarrow{\beta}$ (($\lambda$ y (y \underline{y})) x)  // identifier capture has happened (y)\\
+................ $\overrightarrow{\beta}$ \underline{(x x)} // disaster !
+\end{flushleft}
+\pagebreak
+
+\begin{flushleft}
+\textcolor{blue}{\textbf{{\huge Week 5 Lecture Notes}}}
+\section*{The "real" word}
+\end{flushleft}
+\begin{flushleft}
+"Evalation \underline{Strategies}"\\
+a strange word to use?\\
+we make the languages.     
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+When and what and How parameters are evalueted.
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+\underline{When?}\\
+In Java: $\rightarrow$
+\begin{verbatim}
+a,g(b),c+d
+myfunc(a,b,c);
+myFunc(a++,a++,a++); // order matters
+\end{verbatim}
+\end{flushleft}
+
+\begin{flushleft}
+Are the parameters evaluated left to right or r to l ?\\
+In Java left to r\\
+In C \underline{undefined}? (Different compilers different answers)
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+\underline{OR} We cannot evaluate the parameters at all. And simply pass the expressions to the function body.\\
+(All programming languages do this for \underline{some} things)\\
+Racket is a \underline{strict} language, which means parameters are evaluated 
+\end{flushleft}
+
+\begin{verbatim}
+;#lang lazy
+#lang racket
+(define (my-if condition t f)
+  (cond
+    (condition t)
+    (else f)))
+(define (fac n)
+  (my-if (< n 1) 1 (* n (fac (- n 1)))))
+\end{verbatim}
+%
+
+\begin{flushleft}
+\underline{Except} for \underline{if}\\
+In Java f(a) \&\& g(b) is a boolean expression\\
+They call it "Short circuited evaluation"\\
+\color{red}Evaluated left to right and stop when we know the answer
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+\underline{A practical example:}
+\end{flushleft}
+
+\begin{verbatim}
+int i=0;
+	while(i<a.length && a[i]!=0)
+	{
+	...
+	i++;
+	}
+	while(a[i]!=0 && i<a.length) // after swap, what goes wrong?
+\end{verbatim}
+
+\begin{flushleft}
+Is evaluation in this language "Strict? Non Strict? Sometimes Strict\\
+A different way of binding formal parameters: ..........
+\end{flushleft}
+\begin{center}
+\textbf{\underline{Environments}}
+\end{center}
+
+\begin{flushleft}
+Substitution is not how the real word works (For reasons of efficency)\\
+An environment is an ordered store of identifier / value pairs.\\
+For function application we add formal parameter / actual parameter value pairs to the environment and use that environment to evaluate the function body.\\
+Our \underline{evaluator} takes the environment is an additional parameters when the evaluator avaluates and identifier, it looks up the value in the environment.
+\end{flushleft}
+
+\subsubsection*{Data Definitions}
+An environment is empty OR an identifier / value pair plus an environment.
+\begin{itemize}
+\item look up Enr. environment identifier $\rightarrow$ value or \underline{error}
+\item extend Enr. environment identifier $\rightarrow$ environment
+\end{itemize}
+\begin{verbatim}
+(fundef myFunc (a b c) (+ a (* b c))) //function definition
+(myFunc 3 7 (+ 2 9)) //function application
+\end{verbatim}
+
+\subsubsection*{Evaluate function application}
+\begin{verbatim}
+(extend Enr(extend Enr(empty Enr, 'a, 3)'b, 7)'c 11)'(+ a (* b c)))
+(fundef f1 x(f2 4))
+(fundef f2 y (+ x y)) // x is a identifier capture this is called "dynamic scope". Dynamic scope is a bug.
+
+In Java: 
+int f2(int y){
+	return x+y;
+}
+
+evaluate (f1 42) 
+- x gets bound to 42
+  y gets bound to 4
+ (+ x y) looks up these values in the environment
+- The answer is 46 wrong!!
+\end{verbatim}
+
+\begin{flushleft}
+\underline{The solution} (for now)- When we apply a function, do not extend \underline{the current environment} with formal parameter / value bindings. Extend the \underline{empty} environment.
+\end{flushleft}
+
+\subsubsection*{Grammer}
+\begin{flushleft}
+
+$1)$ $\Lambda\rightarrow\upsilon$
+
+$2)$ $\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)$
+
+$3)$ $\Lambda\rightarrow(\Lambda$
+$\Lambda)$
+
+Data structure and therefore definitions and programs will reflect this.\\
+M[x:=N]\\
+\end{flushleft}
+
+\begin{flushleft}
+$1)$ M is an identifier\\
+a) M=x $\Rightarrow$ M[x	:=N] is N\\
+b) M$\neq$x $\Rightarrow$ M[x:=N] is N\\
+\end{flushleft}
+
+\begin{flushleft}
+$2)$ M is an application just do the two parts\\
+\end{flushleft}
+
+\begin{flushleft}
+$3)$ M is an function definition\\
+Case a is easy $\lambda$yM1, y=x\\
+Case b is hard $\lambda$yM1, y$\neq$x\\
+\end{flushleft}
+
+\subsubsection*{Church Numerals}
+\begin{flushleft}
+n $\equiv$ ($\lambda$ f ($\lambda$ x (f (f (f...x))))) //nf's
+\end{flushleft}
+
+\begin{flushleft}
+ChurchB(n) $\equiv$ (f (ChurchB(n -1)))\\
+ChurchB(1) $\equiv$ ($\lambda$ f ($\lambda$ x (f x)))\\
+Church(n) $\equiv$ ($\lambda$ f (x x (ChurchB(n))))\\
+\end{flushleft}
+
+\begin{flushleft}
+Two=($\lambda$ f ($\lambda$ x (f (f x))))\\
+Zero=($\lambda$ f ($\lambda$ x x))\\
+\end{flushleft}
+	
+\subsubsection*{A successor function "Succ"}
+\begin{flushleft}
+Succ=($\lambda$ n ($\lambda$ f ($\lambda$ x (f ((n f) x))))\\
+onSucc=($\lambda$ n ($\lambda$ f ($\lambda$ x ((n f) (f x))))
+\end{flushleft}
+
+\begin{flushleft}
+To add m and n ($\lambda$ m ($\lambda$ n ((m succ) n)))
+\end{flushleft}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\begin{flushleft}
+\textcolor{blue}{\textbf{{\huge Week 7 Lecture Notes}}}
+\section*{Evaluation "Strategies"}
+\end{flushleft}
+\begin{flushleft}
+\underline{All about function application}- which is the central concepts in programming \underline{(IMHO)} an \underline{oxymoron.} 
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+- We looked at sequence (2 weeks ago)\\
+- Strict vs non-strict\\
+- Eager vs Lazy\\
+- Left to Right is Right to Left\\
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+What is the passed when we apply a function to actual parameters ?
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+\underline{When?}\\
+Example In Java: 
+\begin{verbatim}
+{ 
+a=2;
+myFunc(a);
+}
+------------------------------
+void myFunc(int a){
+...
+a=a+1;
+}
+\end{verbatim}
+\end{flushleft}
+
+\subsection*{What is the value of a?}
+\begin{flushleft}
+System.out.println("a is" +a); $\leftarrow$ The answer is \underline{2}.
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+\underline{Why?}\\
+Because Java / C / C\# / Ruby / Python / C++ are \underline{call by value}\\
+For simple types, most common programming languages are call by value.\\
+The alternative is \underline{call by preference} (PHP can do this)
+\end{flushleft}
+
+\subsection*{But What about complex types ?}
+\begin{flushleft}
+Examples-array, structure, object.
+\begin{verbatim}
+{ 
+a[ ]=2;
+myFunc(a);
+System.out.println("a[ ] is" +a); }
+
+void myFunc(int [] a){
+---
+a[ ]=a[ ]+1
+}
+\end{verbatim}
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+Call by reference for arrays / structures / Strings / objects 
+\begin{verbatim}
+[Except C-C structures are naturally call by value]
+\end{verbatim}
+\begin{flushleft}
+Java strings can be considered call-by-value (because Java strings are immutable)
+\end{flushleft}
+\end{flushleft}
+
+\subsection*{Super accelerated CMPE 313 - (SICP-The Purple Book 1989)}
+\begin{flushleft}
+What is a List ? A list of numbers ?
+\end{flushleft}
+\begin{itemize}
+\item Empty
+\item A pair of a \st{number}(x) and a list of \st{number}(x)
+\end{itemize}
+\begin{verbatim}
+;;add up the numbers in a list
+(define (sum-lon lon)
+  (cond)
+  ((empty? lon) O(empty set))
+  (else ..(+ (first lon)...(sum-lon(rest lon)))))
+  
+(define (mul-lon lon)
+  (cond 
+  ((empty? lon) 1)
+  (else..(* (first lon)(mul-lon(rest lon)))))
+  
+(define (fold combiner null-value lox)
+  (cond
+  ((empty? lox) 1)
+  (else (* (combiner (first lox) (fold combiner null-value (rest lox))))))
+\end{verbatim}
+
+\begin{flushleft}
+fold is a powerful \underline{abstraction}.\\
+I want to evaluate a \underline{polynomial}.
+\end{flushleft}
+
+\begin{center}
+${a}_{0} + {a}_{1}x + {a}_{1}{x}^{2} + {a}_{1}{x}^{3} +....+ {a}_{n}{x}^{n}$ 
+\end{center}
+
+\begin{flushleft}
+Data definition a polynomial is a list of coefficient $({a}_{0},{a}_{1},..,{a}_{n})$\\
+Contract eval polynomial number $\rightarrow$ number\\
+Horner's rule ${a}_{0} + x({a}_{1} + x({a}_{2} + x({a}_{3}...{a}_{n}))))$\\
+To evaluate a polynomial\\
+------\\
+(define (eval-poly p x)\\
+(fold (lambda (l $\gamma$) (+ l (* x r)) $\emptyset$ p))
+\end{flushleft}
+
+\begin{flushleft}
+\underline{map}\\
+(define (map f lox)\\
+(fold (lambda (l $\gamma$) (cons (f l) r)) empty lox))))\\
+\end{flushleft}
+
+\begin{flushleft}
+\underline{filter}\\
+(define (filter p? lox)\\
+(fold (lambda (L r) (if (p? L) (cons (r) r) empty lox))\\
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+Suppose I am doing a \underline{map} to add 2 to every item in a list
+\begin{verbatim}
+(define (add2 lon)
+  (map (lambda (x) (+ x 2)) lon))
+  
+(define (mul 7 lon)
+  (map (lambda (x) (* x 7)) lon ))
+  
+(define (carry f x)
+  (lambda (y) (f x y)))
+---------------------------
+(define (arith-map openbar constant)
+  (map (carry operator constant) lon))
+\end{verbatim}
+\end{flushleft}
+
+\begin{flushleft}
+\textbf{The $\lambda$-calculus} (Summary)\\
+$1)$ $\Lambda\rightarrow\upsilon$
+
+$2)$ $\Lambda\rightarrow(\lambda$ 
+$\upsilon$
+$\Lambda)$
+
+$3)$ $\Lambda\rightarrow(\Lambda$
+$\Lambda)$
+\end{flushleft}
+
+\doublespacing
+\begin{flushleft}
+$\alpha$ ($\lambda$ $\upsilon$ $\Lambda$) $\equiv$ ($\lambda$ $\upsilon$ $\Lambda$ [$\upsilon$:=u])\\
+$\gamma$ ($\lambda$ $\upsilon$ (f $\upsilon$)) $\equiv$ f\\
+$\beta$ (($\lambda$ $\upsilon$ ${\Lambda}_{1}$) ${\Lambda}_{2}$ $\rightarrow$ ${\Lambda}_{1}$ [$\upsilon$:=${\Lambda}_{2}$]
+\end{flushleft}
+
+\begin{flushleft}
+Defining substitution is more complicated.\\
+$\Lambda$[$\upsilon$:=${\Lambda}_{0}$] - see the slides 
+\end{flushleft}
+
+\begin{flushleft}
+\textbf{a)} $\Lambda$=u\\
+if u=$\upsilon$ $\rightarrow$ ${\Lambda}_{0}$ \\
+else $\Lambda$\\
+\textbf{b)} $\Lambda$=(${\Lambda}_{1}$ ${\Lambda}_{2}$)\\
+(${\Lambda}_{1}$[$\upsilon$=${\Lambda}_{0}$] ${\Lambda}_{2}$[$\upsilon$=${\Lambda}_{0}$]\\
+\textbf{c)} $\Lambda$=($\lambda$ u ${\Lambda}_{1}$)\\
+(i) u=$\upsilon$ $\rightarrow$ $\Lambda$\\
+(ii) u$\neq\upsilon$ if necessary re-letter before substituting in the body.
+\end{flushleft}
+
+\subsubsection*{Church Numerals}
+\begin{flushleft}
+0 $\equiv$ ($\lambda$ f ($\lambda$ x x))\\
+1 $\equiv$ ($\lambda$ f ($\lambda$ x (f x)))\\
+2 $\equiv$ ($\lambda$ f ($\lambda$ x (f (f x))))
+\end{flushleft}
+
+\subsubsection*{Successor}
+\begin{flushleft}
+Succ=($\lambda$ n ($\lambda$ f ($\lambda$ x (f ((n f) x))))\\
+onSucc=($\lambda$ n ($\lambda$ f ($\lambda$ x ((n f) (f x))))\\
+(($\lambda$ n ($\lambda$ f ($\lambda$ x (f ((n f) x))))) $\lambda$ f ($\lambda$ x (f x))))\\
+$\downarrow \beta$\\
+($\lambda$ f ($\lambda$ x (f (($\lambda$ f ($\lambda$ x (f x))) f) x))))\\
+$\downarrow \beta$\\
+($\lambda$ f ($\lambda$ x (f (($\lambda$ x (f x))) x))))\\
+$\downarrow \beta$\\
+($\lambda$ f ($\lambda$ x (f (f x)))) $\equiv$ 2!
+\end{flushleft}
+\begin{flushleft}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\textcolor{blue}{\textbf{{\huge Week 8 Lecture Notes}}}
+\section*{Haskell}
+\begin{itemize}
+\item Purely functional 
+\item Statically typed 
+\item Lazy.
+\end{itemize}
+\end{flushleft}
+
+\subsection*{Haskell Curry}
+\begin{flushleft}
+\begin{itemize}
+\item Haskell Platform
+\item Simon Reyton-Jones (F\#) (Glasgow) 
+\end{itemize}
+\end{flushleft}
+
+\section{Functional Programming}
+\begin{flushleft}
+\begin{itemize}
+\item Functions are first class values
+\item No state / No side effects\\
+\doublespacing
+How can we do this in our interpreter ?\\
+A function application (name expr) will no longer be, it will be (expr expr);\\
+$\downarrow$
+\item This means we have more than one \underline{type} of expression
+\item So expression values are no longer automatically numbers.
+\item So we have runtime types.
+\end{itemize}
+\end{flushleft}
+
+\subsection*{1- TYPES}
+\subsection*{2- How will functions be named ?}
+\begin{flushleft}
+\begin{itemize}
+\item Just like any other expression.
+\item Identifiers (which are always formal parameters) and are then applied to actual parameters.
+\item This will also be true for functions.
+\end{itemize}
+\doublespacing
+What would be like to have?
+
+(let
+   
+  \hspace{0.5cm}(myfunc ($\lambda$ x ( + x 3 ))) $\rightarrow$ function def.\\ 
+  \hspace{0.5cm}(myfunc2 ($\lambda$ y (+ y 4 ))) $\rightarrow$ function def.\\ 
+  \hspace{0.5cm}\textless\ program \textgreater {} $expression$
+\\)
+
+
+\textbf{After desugaring:}
+
+((  $\lambda$ (myfunc myfunc2)\\
+\textless\ program \textgreater)\\
+\hspace{0.5cm}( $\lambda$ (x) (+ x 3))\\
+\hspace{0.5cm}( $\lambda$ (y) (+ y 4)))\\
+\textbf{Let is sugar.}\\
+
+(let
+   
+  \hspace{0.5cm}((double ($\lambda$ (x) ( * x 2 )))\\
+  \hspace{0.5cm}(double 7))\\
+   
+(($\lambda$ (double)\\
+\hspace{0.5cm}(double 7))\\
+\hspace{0.5cm}($\lambda$ (x) ( * x 2 )))\\
+\doublespacing
+
+(let
+   
+  \hspace{0.5cm}((multiply-list-by-n ($\lambda$ (l n) (map \underline{($\lambda$ (x) (* x n))} l)) // Some function def. Does something different\\
+  \hspace{1cm}(multiply-list-by-n '(4 5) 3)\\
+  \hspace{1cm}(multiply-list-by-n '(5 6) 7)\\
+
+\end{flushleft}
+
+
+\subsection*{3- Closure}
+\begin{flushleft}
+We need to distinguish function definitions from \underline{function values} when we evaluate a function definition, we get a \underline{function value}. \\
+
+\doublespacing
+function definition $(one$ $\rightarrow$ $many)$ function values.\\
+
+A function value is a function definition plus the environment at the point where the function value was evaluated. This is called a \textbf {closure.}
+\end{flushleft}
+
+\subsection*{4- When we apply a function value?}
+
+Extend the environment in the function value with the bindings of the formal parameters to the actual parameters
+\doublespacing
+\textbf{Sugaring the $\lambda$-calculus; }\\
+\vspace{2mm} Some definitions;
+
+($F^{0}$M)  $\equiv$ M\\
+($F^{n+1}$M)  $\equiv$ F(($F^{n}$M)\\
+
+Church Numeral = $C_n$\\
+$C_n$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{n}$ x )))\\
+$C_0$ $\equiv$($\lambda$ f ($\lambda$ x ( $f^{0}$ x )))  $\equiv$ ( $\lambda$ f ( $\lambda$ x x )) \\
+$C_1$ $\equiv$($\lambda$ f ($\lambda$ x x ( $f^{1}$ x )))  $\equiv$ ( $\lambda$ f ( $\lambda$ x (f x ))) \\
+$C_2$ $\equiv$($\lambda$ f ($\lambda$ x x ( $f^{2}$ x )))  $\equiv$( $\lambda$ f ( $\lambda$ x f (f x ))) \\
+\doublespacing
+\underline{LET} - as we did for our interpreter.\\
+\textbf{SUCC} ($\lambda$ n ( $\lambda$ f ( $\lambda$ x) (f (( n f) x ))))\\
+\textbf{TRUE} ( $\lambda$ x ( $\lambda$ y x ))\\
+\textbf{FALSE} ( $\lambda$ x ( $\lambda$ y y ))\\
+\textbf{IF} ( $\lambda$ a ( $\lambda$ b ($\lambda$ c ((a b ) c))))\\
+\textbf{ZERO?} ( $\lambda$ n (( n ($\lambda$ x FALSE)) TRUE))\\
+
+
+\section{Data Structure}
+
+If we can make a pair, we can make a data structure.\\
+What are the semantics of CONS FIRST REST (in Racket)?\\
+\doublespacing
+\hspace{3mm} (FIRST ( CONS A B )) $\equiv$ A // Necessary semantics\\
+\hspace{3mm} (REST (CONS A B ))  $\equiv$ B // Necessary semantics\\
+\doublespacing
+\textbf{CONS:} ($\lambda$ a ($\lambda$ b ( $\lambda$ \textcolor{red}{((f a ) b)})))\\
+\textbf{FIRST:} ($\lambda$ c (c TRUE))\\
+\textbf{REST:} ($\lambda$ c (c FALSE))\\
+\pagebreak
+\begin{flushleft}
+\textcolor{blue}{\textbf{{\huge Week 9 Lecture Notes}}}
+\section*{Laziness}
+\begin{flushleft}
+\textcolor{red}{\textbf{\underline{Cons:}}} We want it to be lazy. How can we get laziness in an eager language?\\
+
+\doublespacing
+($\lambda$ () \underline{$<$expr$>$}) $\rightarrow$ promise\\
+\doublespacing
+to force our promise to evaluate we just unite (promise)\\
+\doublespacing
+(delay \underline{(+ 2 3)})\\
+\doublespacing
+define-syntax-rule makes a function that operates on program text. It is a way of providing syntactic sugar.
+\end{flushleft}
+
+
+\subsection*{Hamming Code}
+\begin{flushleft}
+Reduce a list of numbers only divisible by the prime numbers 3,5,7 and no other prime number in order 1  3  5  7  9  15  21  25  27  35
+\end{flushleft}
+
+\subsection*{Georg Contor}
+\begin{flushleft}
+The hotel with a infinite number of room is full\\
+
+\doublespacing
+What is our interpreter now going to look like?
+
+\doublespacing
+We have \underline{function values}. So we need a different way of naming functions
+
+\doublespacing
+The only way we now have of creating names is as function parameters
+
+\doublespacing
+This is cumbersome to write in the target language.
+
+\doublespacing
+Why don't we use the syntactic sugar of a Racket style Let statement?
+\begin{verbatim}
+(let
+  <def list>
+    exp)
+    ...
+   <def list> ---> ((name1 expr1)
+                    (name2 expr2)
+                    (namen exprn)..)
+
+(let <def list> exp) ---> (let ((name1 expr1))
+                              (let ((name2 expr2)) 
+                                 (let... expr))))
+\end{verbatim}
+desugar 2\\
+(let (name exp) program) $\xrightarrow{desugar}$ (($\lambda$.name program) expr)
+\end{flushleft}
+
+\subsection*{Grammer for our target language}
+\begin{flushleft}
+S $\rightarrow$ identifier\\
+S $\rightarrow$ (S S)\\
+S $\rightarrow$ ($\lambda$ identifier S)\\
+S $\rightarrow$ (let (identifier S) S)\\
+S $\rightarrow$ number\\
+S $\rightarrow$ (+ S S)\\
+
+\doublespacing
+When we want to multi-parameter functions. We can also do this by desugaring. \\
+
+\doublespacing
+($\lambda$ (V1 V2 V3) expr) $\xrightarrow{desugar}$ ($\lambda$ V1 ($\lambda$ V2 ($\lambda$ V3 ... expr))))\\
+
+\doublespacing
+(a b c d) $\xrightarrow{desugar}$ (((a b) c) d)
+\end{flushleft}
+
+
+\subsection*{Lambda Calculus}
+\begin{flushleft}
+((I M) N) $\rightarrow$ (M N)\\
+\doublespacing
+exponentation = identity function
+
+\doublespacing
+The predecessor function is \underline{hard}\\
+(PRED n) what we want is n-1\\
+Think of a pipeline\\
+Let us this transformation an pairs\\
+\center
+[a b] $\rightarrow$ [b, (Succ B)]
+\begin{verbatim}
+(lambdan
+    (FIRST ((n (lambda c
+        ((CONS (REST c)) (SUCC (REST c))))))
+        ((CONS ZERO) ZERO))))
+        This is a PRED function
+\end{verbatim}
+\end{flushleft}
+
+\subsection*{Observation}
+\begin{flushleft}
+($\lambda$ x x) $\equiv$ ($\lambda$ y y) ($\alpha$ transformation)\\
+($\lambda$ x ($\lambda$ y y)) $\equiv$ ($\lambda$ a ($\lambda$ b b)) ($\alpha$ transformation)\\
+($\lambda$ \textcolor{red}{x} ($\lambda$ y \textcolor{red}{x})) $\neq$ ($\lambda$ a ($\lambda$ \textcolor{red}{b} \textcolor{red}{b}))\\
+ \doublespacing
+What is the normal form?\\
+($\lambda$ \textcolor{red}{x} ($\lambda$ y \textcolor{red}{x})) $\neq$ ($\lambda$ a ($\lambda$ \textcolor{red}{b} \textcolor{red}{b}))\\
+What is the essention difference
+\end{flushleft}
+
+\subsection*{de Burjin indices}
+\begin{flushleft}
+($\lambda$ x x) $\rightarrow$ ($\lambda$ 1)\\
+($\lambda$ ($\lambda$ 1)) $\equiv$ ($\lambda$ ($\lambda$ 1))\\
+($\lambda$ ($\lambda$ 2)) $\neq$ ($\lambda$ ($\lambda$ 2))
+\end{flushleft}
+\end{flushleft}
+\begin{flushleft}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\textcolor{blue}{\textbf{{\huge Week 10 Lecture Notes}}}
+\section*{Haskell}
+\begin{flushleft}
+\underline{(Simon Reyton-Jones)} $\rightarrow$ Glasgow Haskell Compiler new language \underline{F\#}
+\begin{itemize}
+\item Purely (no assignment, no side effects) Functional-function values are first class value.
+\item \underline{Lazy} (example: all lists can be infinite. No special treatment is needed for infinite lists)
+\item Sophisticated Type System (That allows generic programming) Variable types.
+\item Lots of interesting sugar.
+\end{itemize}
+\begin{flushleft}
+\begin{tcolorbox}
+Java is not the solution\\
+Java is the problem
+\end{tcolorbox}
+\bigskip
+\end{flushleft}
+	
+\subsection*{$\beta$ transformation}
+\begin{flushleft}
+Why did we object to identifier capture?\\
+\begin{flushleft}
+\doublespacing 
+($\lambda$ m (((($\lambda$ x (($\lambda$ y (x y))) m) n))))) y) x)\\ ($\lambda$ m (((($\lambda$ x (($\lambda$ y (x y))) m) n))) y) x)
+\end{flushleft}
+\textcolor{red}{If we have a identifier capture the result of the B transformations depends on the order they are done in.}
+\end{flushleft}
+\begin{flushleft}
+Is it the case that our definition of B transformation (including the substitution rule) avoids the problem?\\
+\bigskip
+\end{flushleft}
+
+\subsection*{The church-Rosse property a.k.a the Diamond property}
+\begin{flushleft}
+If a lambda- sentence M can be transformed by chains of B transformations into sentences M1 and M2, then there exists (possibly empty) chains of B transformations that transform M1 and M2 into some sentence M3.
+\end{flushleft}
+\begin{flushleft}
+A normal form is a lambda - sentence in which no B transformation is possible \\
+If Church-Rosser applies every sentence has \underline{at most} \underline{one} normal form.
+\end{flushleft}
+\begin{flushleft}
+\textbf{\underline{Proof}} Suppose M has 2 normal forms, M1 and M2. But Church Rosser tells us that these are chains of B      transformations that transform M1 and M2 into M3. But M1, M2 are normal forms, so these chains must be empty. So M1=M2=M3.
+\end{flushleft}
+\begin{flushleft}
+(($\lambda$ x y) (($\lambda$ x (x x)) ($\lambda$ x (x x))))
+\end{flushleft}
+\end{flushleft}
+\end{flushleft}
+\begin{flushleft}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\textcolor{blue}{\textbf{{\huge Week 11 Lecture Notes}}}
+\section*{Using Map for Haskell Function}
+\begin{flushleft}
+Use map to write a Haskell function that multiplies every element of a possibly infinite list of integers by n.\\
+\bigskip
+
+{\large $\bigstar$ mulList :: Integer $\rightarrow$ [Integer] $\rightarrow$ [Integer]\\
+\vspace*{0.2cm}
+$\bigstar$ mulList n l= map ((*) n) \underline{$\ell$}}\\
+\bigskip
+{\LARGE \tab{$\downarrow$}}\\
+\bigskip
+This must be a function that takes an integer and multiplies it by n.\\
+\vspace*{0.8cm}
+\emph{\begin{large}
+Type signature of map?\\
+$\succ$ map :: (x $\rightarrow$ y) $\rightarrow$ [x] $\rightarrow$ [y]\\
+\bigskip
+Type signature of x ?\\
+$\succ$ Integer $\rightarrow$ Integer $\rightarrow$ Integer\\
+\end{large}}
+\bigskip
+\vspace*{1cm}
+{\large \textbf{\underline{Exercise 3.59} in SICP}}\\
+\vspace*{0.5cm}
+{\normalsize \textbf{\underline{Infinite series}}}\\
+\vspace*{0.5cm}
+Infinite series  \emph{{\large S}= $ {a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + {a}_{3}{x}^{3} +\ldots $} treat an infinite series as an infinite list \emph{[a0,a1...]}\\
+\bigskip
+\hspace{0.9cm}\textbf{Consider} {\large $\int_{y}^{x} S dx$}. Can we write an \underline{integrate} function?\\
+\bigskip
+\hspace{0.9cm}\textbf{Contract}
+[Number] $\rightarrow$ [Number]\\
+\begin{large}
+$$\int_{0}^{x} {a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + {a}_{3}{x}^{3} +\ldots dx $$ \\
+$$= {a}_{0}x + {a}_{1}\dfrac{x^{2}}{2} + {a}_{2}\dfrac{x^{3}}{3} + {a}_{3}\dfrac{x^{4}}{4}$$
+\end{large} 
+\begin{flushleft}
+\emph{Integrate s = 1 : zipWith\\
+\bigskip
+Consider a function such that $\int f(x)dx$ = f(x)\\
+\tab funny = integrate funny\\
+\bigskip
+powers x = 1 : map($\ast$ x) (powers x)}\\
+\vspace*{1cm}
+\textbf{\underline{ZipWith Signature: }}\\
+\bigskip
+(a $\rightarrow$ b $\rightarrow$ c) $\rightarrow$ [a] $\rightarrow$ [b] $\rightarrow$ [c]
+\end{flushleft}
+\bigskip
+\subsection*{The most beautiful function}
+\begin{flushleft}
+(LET n ($\nu$ $< expr >$) $< body >$)\\
+\bigskip
+{\LARGE \tab{$\downarrow$ desugar }}\\
+\bigskip
+(($\lambda$ $\nu$ $< body >$) $< expr >$)\\
+\bigskip
+\textcolor{red}{(LET (fac} ($\lambda$ n (((\underline{IF} (\underline{ZERO?} n)) \underline{ONE}) (\underline{fac} (\underline{PRED} n)))))\\
+\bigskip
+{\LARGE \tab{$\swarrow\downarrow\searrow$}}\\
+\bigskip
+\textcolor{red}{(fac SEVEN) all defined in LETS}\\
+\bigskip
+
+{\LARGE \tab{$\Downarrow$ desugar}}\\
+\bigskip
+(($\lambda$ fac (fac SEVEN)) ($\lambda$ n ((IF (ZERO? n) ONE) (\textcolor{red}{fac} (PRED  n))))\\
+
+\vspace*{1cm}
+Our factorial function needs to look like this: \\
+( $\lambda$ fac ($\lambda$ n ..... fac .....))\\
+\vspace*{1cm}
+Then we need to make a closure of fac applied to \underline{itself}\\
+\vspace*{0.4cm}
+(\underline{($\lambda$ f (($\lambda$ x (f (x x))) ($\lambda$ x (f (x x)))))} F)\\
+\textcolor{red}{\tab{y}}\\
+\bigskip
+{\LARGE \tab{$\downarrow$ $\beta$}}\\
+\bigskip
+(($\lambda$ x (F (x x)) ($\lambda$ x (F (x x))))\\
+\bigskip
+{\LARGE \tab{$\downarrow$ $\beta$}}\\
+\bigskip
+(F (($\lambda$ x (F (x x)) ($\lambda$ x (F (x x)))) $\equiv$ F(YF)\\
+\vspace*{1.5cm}
+The \underline{Y combinator}  
+
+\end{flushleft}
+\end{flushleft}
+\end{flushleft}
+\end{document}

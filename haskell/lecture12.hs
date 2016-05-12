@@ -12,6 +12,9 @@ cosSeries = 1 : integrate (map negate sineSeries)
 sinexSeries x = zipWith (*) (powers x) sineSeries
 cosxSeries x = zipWith (*) (powers x) cosSeries
 
+sineSums = sums . sinexSeries
+cosSums = sums . cosxSeries
+
 
 facs = 1 : zipWith (*) facs [2,3 ..]
 

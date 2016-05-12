@@ -25,9 +25,9 @@ mergesort _ [] = []
 mergesort _ [x] = [x]
 mergesort before l  = merge before (mergesort before (evens l)) (mergesort before (odds l))
 
-integrate s = 1 : zipWith (/) s [1,2 ..]
+integrate s = zipWith (/) s [1,2 ..]
 
-funny = integrate funny
+funny = 1 : integrate funny
 
 sums s = (head s) : map ((+) (head s)) (sums (tail s)) 
 

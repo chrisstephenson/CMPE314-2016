@@ -1,5 +1,16 @@
 #lang plai-typed
 
+;; README
+;; This code for a desugarer from lambda calculus, sugared with LETs, to plain lambda calculus
+;; is provided as-is. The tests at the end give an idea about usage
+;; You can copy paste the questions from question 4 of Quiz 09 (or question 3 of quiz 08, which is the same) to see how the
+;; desugarer handles them.
+;;
+;; This code is deliberately comment, test and example light.
+;; I have written the code for you - you add the comments, tests, examples, explanations
+;; You may use this code (with acknowledgement) in your projects
+
+
 (define-type lambda
   [lambda-id (id : symbol)]
   [lambda-def (bound : symbol) (body : lambda)]

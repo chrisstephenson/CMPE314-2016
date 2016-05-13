@@ -1,0 +1,62 @@
+#lang plai-typed
+
+(define-type lambda
+  [lambda-id (id : symbol)]
+  [lambda-def (bound : symbol) (body : lambda)]
+  [lambda-apply (applied : lambda) (applicand : lambda)]
+  )
+
+(define-type lambda-sugared
+  [lambda-sugared-id (id : symbol)]
+  [lambda-sugared-def (bound : symbol) (body : lambda-sugared)]
+  [lambda-sugared-apply (applied : lambda-sugared) (applicand : lambda-sugared)]
+  [lambda-sugared-LET (let-bindings : (listof let-binding)) (let-body : lambda-sugared)]
+  )
+
+(define-type let-binding
+  [let-binding-data (let-bound : symbol) (let-value : lambda-sugared)])
+
+(define (parse-let-binding [s : s-expression]) : let-binding
+  (let ((let-binding (s-exp->list s)))
+    (let-binding-data (s-exp->symbol (first let-binding)) (parse-sugared (second let-binding)))))
+
+;; parse-sugared s-expression -> lambda-sugared
+;; convert a quoted s expression into the equivalent lambda-sugared form
+;; examples
+(define (parse-sugared [s : s-expression]) : lambda-sugared
+  (cond
+    [(s-exp-symbol? s) (lambda-sugared-id (s-exp->symbol s))]
+    [(s-exp-list? s)
+     (let ([sl (s-exp->list s)])
+       (cond
+         [(and (= (length sl) 3) (symbol=? (s-exp->symbol (first sl)) 'λ))
+           (lambda-sugared-def (s-exp->symbol (second sl)) (parse-sugared (third sl)))]
+         [(and (= (length sl) 3) (symbol=? (s-exp->symbol (first sl)) 'LET))
+           (lambda-sugared-LET (map parse-let-binding (s-exp->list (second sl))) (parse-sugared (third sl)))]
+         [(= (length sl) 2)
+          (lambda-sugared-apply (parse-sugared (first sl)) (parse-sugared (second sl)))]           
+         [else (error 'parse (string-append "invalid list input" (s-exp->string s)))]))]
+    [else (error 'parse (string-append "invalid input" (s-exp->string s)))]))
+
+;unparse lambda -> s-expression 
+(define (unparse [expr : lambda]) : s-expression 
+ (type-case lambda expr
+    [lambda-id (id) (symbol->s-exp id)]
+    [lambda-def (bound body) (list->s-exp (list (symbol->s-exp 'λ) (symbol->s-exp bound) (unparse body)))]
+    [lambda-apply (lhs rhs) (list->s-exp (list (unparse lhs) (unparse rhs)))]))
+
+(define (desugar-let [lb : let-binding] [body : lambda]) : lambda
+  (type-case let-binding lb
+    [let-binding-data (let-bound let-value) (lambda-apply (lambda-def let-bound body) (desugar let-value))]))
+
+(define (desugar [sugared-expr : lambda-sugared]) : lambda
+ (type-case lambda-sugared sugared-expr
+    [lambda-sugared-id (id) (lambda-id id)]
+    [lambda-sugared-def (bound body) (lambda-def bound (desugar body))]
+    [lambda-sugared-apply (lhs rhs) (lambda-apply (desugar lhs) (desugar rhs))]
+    [lambda-sugared-LET (let-bindings let-body) (foldr desugar-let (desugar let-body) let-bindings)]))
+
+(test (unparse (desugar (parse-sugared '(LET ((a b)) x)))) '((λ a x) b))
+(test (unparse (desugar (parse-sugared '(LET ((a b) (c d)) x)))) '((λ a ((λ c x) d)) b))
+(test (unparse (desugar (parse-sugared '(LET ((p q) (ADD (λ n (λ m (λ f (λ x ((m f) ((n f) x)))))))) (λ p ((ADD p)p))))))
+      '((λ p ((λ ADD (λ p ((ADD p) p))) (λ n (λ m (λ f (λ x ((m f) ((n f) x)))))))) q))

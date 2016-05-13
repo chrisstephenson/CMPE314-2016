@@ -1,0 +1,92 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+\usepackage{amsmath}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\begin{flushleft}
+ Use map to write Haskell function that multiplies every element of a possibly infinite list of integers by n.\\
+ \begin{verbatim}
+  mulList :: Integer -> [Integer] -> [Integer]
+  mulList n l = map ((*) n) l
+ \end{verbatim}
+The signature of map?\\
+\begin{verbatim}
+ map :: (x -> y) -> [x] -> [y]
+\end{verbatim}
+Type signature of *?
+\begin{verbatim}
+ Integer -> Integer -> Integer
+\end{verbatim}
+\end{flushleft}
+\section*{Exercise 3.59 in SICP}
+\begin{flushleft}
+ \underline{Infinite series}\\
+ \verb|S = |  $a_0 + a_1x + a_2x^2 + a_3x^3 + ... $\\
+ treat an infinite series as an infinite list $[a_0, a_1]$\\
+ \bigskip
+ Consider $\int_{0}^{x} Sdx$ can we write an \underline{integrate} function?\\
+ \bigskip
+ Contract \verb|[Number] -> [Number]|\\
+ $$\int_{0}^{x} (a_0 + a_1x + a_2x^2 + a_3x^3 + ...) dx = a_0x + \frac{a_1x^2}{2} + \frac{a_2x^3}{3} + ...$$\\
+ \begin{verbatim}
+  integrate s = 1 : zipWith (/) S [1,2..]
+ \end{verbatim}
+ \underline{zipWith signature}\\
+ \verb|(a -> b -> c) -> [a] -> [b] -> [c]|\\
+ \bigskip
+ Consider a function such that $\int f(x)dx = f(x)$\\
+ \begin{verbatim}
+  funny = integrate funny
+  
+  powers x = 1 : map(* x) (powers x)
+ \end{verbatim}
+\end{flushleft}
+\pagebreak
+\section*{The most beautiful function}
+\begin{flushleft}
+ \begin{verbatim}
+  (LET ((x (lambda x x)) (succ (lambda n (lambda f (lambda x (f ((n f) x))))))
+         <body>)
+         
+         
+  (LETn (v <expr>) <body>)  ==>  ((lambda v <body>) <expr>)
+ \end{verbatim}
+ we want to write factorial\\
+ \begin{verbatim}
+  (LET (fac (lambda n (((IF (ZERO ? n)) ONE) (fac (PRED n))))
+ \end{verbatim}
+ all defined in LETs desugar
+ \begin{verbatim}
+  ((lambda fac (fac SEVEN)) (lambda n ((IF (ZERO ? N) ONE) (fac (PRED n))))
+ \end{verbatim}
+ Our factorial function needs to look like this
+ \begin{verbatim}
+  (lambda fac (lambda n .. fac ..))
+ \end{verbatim}
+ Then we need to make a closure of fac applied to \underline{itself.}
+ \begin{verbatim}
+  ((lambda f ((lambda x (f (x x))) (lambda x (f (x x))))) F)
+ \end{verbatim}
+ $\Big\downarrow{\beta}$\\
+ \bigskip
+ \verb|((lambda x (F (x x)) (lambda x (F (x x))))| $\equiv$ \verb|(YF)|\\
+ \bigskip
+ $\Big\downarrow{\beta}$\\
+ \bigskip
+ \verb|(F ((lambda x (F (x x)) (lambda x (F (x x))))| $\equiv$ \verb|F(YF)|\\
+ \bigskip
+ \underline{The Y combinator}
+\end{flushleft}
+\end{document}

@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+\usepackage{amsmath}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Haskell}
+\begin{flushleft}
+ \begin{itemize}
+  \item has typing
+  \item and type interface
+ \end{itemize}
+ What is the right hand side cosSeries?\\
+ It is a list comprehension\\
+ \bigskip
+ The aim is;\\
+ $$1 -\frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + ...$$\\
+ \begin{verbatim}
+  facs = 1 : zipWith (*) facs[2,3,..]
+  fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
+ \end{verbatim}
+\end{flushleft}
+
+\section*{Eratosthenes Sieve}
+\begin{flushleft}
+ \begin{verbatim}
+  isPrime :: [Integer] Integer -> Bool
+  isPrime lp n 
+           | (head lp) ^ 2 > n = True
+           | mod n (head lp) == 0 False
+           | otherwise = isPrime(tail lp) n
+ 
+  
+  primes = 2 : (filter (isPrime primes) [3,5...])
+ \end{verbatim}
+\end{flushleft}
+
+\section*{Type Signatures}
+\begin{flushleft}
+ \begin{verbatim}
+  isPrime :: [Integer] -> Integer -> Bool
+  
+  filter :: (a -> Bool) -> [a] -> [a]
+  map :: (a -> b) -> [a] -> [b]
+  foldr :: (a-> b -> b) -> b -> [a] -> b
+  
+  sum = foldr (+) 0
+  product = foldr (*) 1
+ \end{verbatim}
+ Leveraging the Haskell type system - polynomial arithmetic.\\
+ $(a_0 + a_1x + a_2x^2 + ... + a_nx^n) \leftarrow$ polynomial in 1 variable.\\
+ represent as a list $[a_0, a_1, .. a_n]$\\
+ $[a_0, a_1, .. a_n] + [b_0, b_1, .. b_m] = [a_0 + b_0, a_1 + b_1, ..]$\\
+ $[a_0, a_1, ..] * [b_0, b_1, .. b_m] = [a_0 * b_0, a_1 * b_0 + a_0 * b_1, .. a_m * b_n]$
+\end{flushleft} 
+\end{document}

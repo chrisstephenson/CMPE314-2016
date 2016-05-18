@@ -1,0 +1,141 @@
+#lang plai-typed
+
+;; README
+;; This code for a desugarer from lambda calculus, sugared with LETs, to plain lambda calculus
+;; is provided as-is. The tests at the end give an idea about usage
+;; You can copy paste the questions from question 4 of Quiz 09 (or question 3 of quiz 08, which is the same) to see how the
+;; desugarer handles them.
+;;
+;; This code is deliberately comment, test and example light.
+;; I have written the code for you - you add the comments, tests, examples, explanations
+;; You may use this code (with acknowledgement) in your projects
+
+
+(define-type lambda
+  [lambda-id (id : symbol)]
+  [lambda-def (bound : symbol) (body : lambda)]
+  [lambda-apply (applied : lambda) (applicand : lambda)])
+
+(define-type lambda-sugared
+  [lambda-sugared-id (id : symbol)]
+  [lambda-sugared-def (bound : symbol) (body : lambda-sugared)]
+  [lambda-sugared-apply (applied : lambda-sugared) (applicand : lambda-sugared)]
+  [lambda-sugared-LET (let-bindings : (listof let-binding)) (let-body : lambda-sugared)])
+
+(define-type let-binding
+  [let-binding-data (let-bound : symbol) (let-value : lambda-sugared)])
+
+(define (parse-let-binding [s : s-expression]) : let-binding
+  (let ((let-binding (s-exp->list s)))
+    (let-binding-data (s-exp->symbol (first let-binding)) (parse-sugared (second let-binding)))))
+
+;; parse-sugared s-expression -> lambda-sugared
+;; convert a quoted s expression into the equivalent lambda-sugared form
+;; examples
+(define (parse-sugared [s : s-expression]) : lambda-sugared
+  (cond
+    [(s-exp-symbol? s) (lambda-sugared-id (s-exp->symbol s))]
+    [(s-exp-list? s)
+     (let ([sl (s-exp->list s)])
+       (cond
+         [(and (= (length sl) 3) (symbol=? (s-exp->symbol (first sl)) 'λ))
+          (lambda-sugared-def (s-exp->symbol (second sl)) (parse-sugared (third sl)))]
+         [(and (= (length sl) 3) (symbol=? (s-exp->symbol (first sl)) 'LET))
+          (lambda-sugared-LET (map parse-let-binding (s-exp->list (second sl))) (parse-sugared (third sl)))]
+         [(= (length sl) 2)
+          (lambda-sugared-apply (parse-sugared (first sl)) (parse-sugared (second sl)))]           
+         [else (error 'parse (string-append "invalid list input" (s-exp->string s)))]))]
+    [else (error 'parse (string-append "invalid input" (s-exp->string s)))]))
+
+;unparse lambda -> s-expression 
+(define (unparse [expr : lambda]) : s-expression 
+  (type-case lambda expr
+    [lambda-id (id) (symbol->s-exp id)]
+    [lambda-def (bound body) (list->s-exp (list (symbol->s-exp 'λ) (symbol->s-exp bound) (unparse body)))]
+    [lambda-apply (lhs rhs) (list->s-exp (list (unparse lhs) (unparse rhs)))]))
+
+(define (desugar-let [lb : let-binding] [body : lambda]) : lambda
+  (type-case let-binding lb
+    [let-binding-data (let-bound let-value) (lambda-apply (lambda-def let-bound body) (desugar let-value))]))
+
+(define (desugar [sugared-expr : lambda-sugared]) : lambda
+  (type-case lambda-sugared sugared-expr
+    [lambda-sugared-id (id) (lambda-id id)]
+    [lambda-sugared-def (bound body) (lambda-def bound (desugar body))]
+    [lambda-sugared-apply (lhs rhs) (lambda-apply (desugar lhs) (desugar rhs))]
+    [lambda-sugared-LET (let-bindings let-body) (foldr desugar-let (desugar let-body) let-bindings)]))
+
+(test (unparse (desugar (parse-sugared '(LET ((a b)) x)))) '((λ a x) b))
+(test (unparse (desugar (parse-sugared '(LET ((a b) (c d)) x)))) '((λ a ((λ c x) d)) b))
+(test (unparse (desugar (parse-sugared '(LET ((p q) (ADD (λ n (λ m (λ f (λ x ((m f) ((n f) x)))))))) (λ p ((ADD p)p))))))
+      '((λ p ((λ ADD (λ p ((ADD p) p))) (λ n (λ m (λ f (λ x ((m f) ((n f) x)))))))) q))
+
+
+(define (set-remove [to-remove : symbol] [set : (listof symbol)]) : (listof symbol)
+  (filter (λ (x) (not (symbol=? x to-remove))) set))
+
+(define (set-subtract [set1 : (listof symbol)][set2 : (listof symbol)]) : (listof symbol)
+  (foldr set-remove set1 set2)) 
+
+(define (set-union [set1 : (listof symbol)][set2 : (listof symbol)]) : (listof symbol)
+  (append set1 (set-subtract set2 set1)))
+
+(define (set-member [to-find : symbol] [set : (listof symbol)]) : boolean
+  (not (= (length (filter (λ (x) (symbol=? to-find x)) set)) 0)))
+
+;; *******************************
+;; Distributed new id code package
+;; *******************************
+(define (quotient [a : number] [b : number]) : number
+  (/ (- a (remainder a b)) b))
+
+(define (number->string [x : number]) : string
+  (if (zero? x) "" (string-append (number->string (quotient x 10))
+                                  (list->string (list (string-ref "0123456789" (modulo x 10)))))))
+
+(define (chop-tail [l : (listof char)]) : (listof char)
+  (if (or (empty? l) (char=? (first l) #\- )) empty (cons (first l) (chop-tail (rest l )))))
+
+(define (clear-suffix-number [old : symbol]) : symbol
+  (string->symbol (list->string (chop-tail (string->list (symbol->string old))))))
+
+(define (add-new-suffix-number [old-chopped : symbol] [n : number]) : symbol
+  (string->symbol (string-append (string-append (symbol->string old-chopped) "-") (number->string n))))
+
+(define (new-ident-fun-maker [start : number]) : [symbol -> symbol]
+  (λ ([old : symbol]) : symbol
+    (begin
+      (set! start (+ start 1))
+      (add-new-suffix-number (clear-suffix-number old) start))))
+
+(define make-new-ident (new-ident-fun-maker 0))
+;; **************************************
+;; End of distributed new id code package
+;; **************************************
+
+(define (free-ids [expr : lambda]) : (listof symbol)
+  (type-case lambda expr
+    [lambda-id (id) (list id)]
+    [lambda-def (bound body) (set-remove bound (free-ids body))]
+    [lambda-apply (lhs rhs) (set-union (free-ids lhs) (free-ids rhs))]))
+
+(define (beta-transform [applied : lambda] [applicand : lambda]) : lambda
+  (type-case lambda applied
+    [lambda-id (id) (error 'beta-transform "applied not a def - an id")]
+    [lambda-def (bound body) (substitute applicand bound body)]
+    [lambda-apply (lhs rhs) (error 'beta-transform "applied not a def - an apply")]))
+
+(define (substitute [to-sub : lambda] [for : symbol] [in : lambda]) : lambda
+  (type-case lambda in
+    [lambda-id (id) (if (symbol=? for id) to-sub in)]
+    [lambda-apply (lhs rhs) (lambda-apply (substitute to-sub for lhs)
+                                          (substitute to-sub for rhs))]
+    [lambda-def (bound body) (if (symbol=? for bound)
+                                 in
+                                 (if (or (not (set-member for (free-ids body)))
+                                         (not (set-member bound (free-ids to-sub))))
+                                     (lambda-def bound (substitute to-sub for body))
+                                     (let ((new-sym (make-new-ident bound)))
+                                       (lambda-def new-sym
+                                                   (substitute to-sub for
+                                                               (substitute (lambda-id new-sym) bound body))))))]))

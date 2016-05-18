@@ -1,0 +1,101 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+\usepackage{amsmath}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Memory Management}
+\begin{flushleft}
+ In Java we can allocate memory with \underline{new} keyword.
+ \begin{verbatim}
+  int[] a = new int[n];
+ \end{verbatim}
+ In C/C++ we have \underline{malloc} and \underline{free}.\\
+ \bigskip
+ If we have \underline{manual} memory management;
+ \begin{itemize}
+  \item[(a)] We can have a memory leak. (forget to free)
+  \item[(b)] We can have a catastrophe. (free memory still in use)
+ \end{itemize}
+ Even this is not cheap.\\
+ Especially if we think about \underline{fragmentation}.
+ \begin{verbatim}
+  +------------------------------------------------+
+  |      | free |      | free |      | free |      |
+  +------------------------------------------------+
+ \end{verbatim}
+ Manual is not a good idea. - Leads to problems in practice.\\
+ We want an automatic system.\\
+ It needs to detect when allocated memory can be handed back.
+ \begin{itemize}
+  \item We want a system that is \underline{sound}. (does not hand back free memory)
+  \item We want a system that is \underline{complete}. (hands back all free memory)
+ \end{itemize}
+\end{flushleft}
+
+\subsection*{Solution 1 (PHP, Swift)}
+\subsubsection*{Reference Counts}
+ \begin{flushleft}
+  Increase for each new reference to a piece of memory,\\
+  decrease when a reference is deleted or overwritten.\\
+  When the count drops to \underline{zero} hand back the memory.
+  \begin{verbatim}
+   class x {
+      .. x a = this;    <-- Circular Reference
+   }
+  \end{verbatim}
+  In this example, there is no way to fall zero! It causes memory leak.
+ \end{flushleft}
+ \pagebreak
+
+\subsection*{Solution 2 (Java, C\#, Racket, Haskell, ..)}
+\subsubsection*{Garbage Collection}
+\begin{flushleft}
+\begin{itemize}
+ \item[] Find the memory in use starting from base references,
+ \item[] Mark the memory in use,
+ \item[] Free all the rest.
+\end{itemize}
+\bigskip
+\textbf{Cheney (1970)}\\
+ \begin{itemize}
+  \item[] Divide memory into two,
+  \item[] Use A for allocating memory,
+  \item[] When A is ``exhausted"
+  \item[] Copy referenced memory from A to B
+  \item[] Mark the old copies with ''broken hearts"
+ \end{itemize}
+\bigskip
+\textbf{Exploit}\\
+\begin{itemize}
+ \item Short term allocation
+ \item Long term allocation
+\end{itemize}
+\end{flushleft}
+
+\subsection*{Generational Garbage Collection}
+
+\pagebreak
+\begin{verbatim}
+ (define (substitute [to-sub : lambda] [for : symbol] [in : lambda]) : lambda
+      (type-case lambda in
+           [lambda-id (id) (if (symbol=? for id) to-sub in)]
+           [lambda-apply (lhs rhs) (lambda-apply (substitute to-sub for lhs)
+                                                 (substitute to-sub for rhs))]
+           [lambda-def (bound body) (if (symbol=? for bound) in
+                                    (if (or (not (set-member for (free-identifiers body)))
+                                            (not (set-member bound (free-identifiers to-sub)))
+                                    (lambda-def bound (substitute to-sub in body)))))]
+\end{verbatim}
+\end{document}

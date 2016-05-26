@@ -1,0 +1,256 @@
+#lang plai-typed
+
+;; README
+;; This code for a desugarer from lambda calculus, sugared with LETs, to plain lambda calculus
+;; is provided as-is. The tests at the end give an idea about usage
+;; You can copy paste the questions from question 4 of Quiz 09 (or question 3 of quiz 08, which is the same) to see how the
+;; desugarer handles them.
+;;
+;; This code is deliberately comment, test and example light.
+;; I have written the code for you - you add the comments, tests, examples, explanations
+;; You may use this code (with acknowledgement) in your projects
+
+
+(define-type lambda
+  [lambda-id (id : symbol)]
+  [lambda-def (bound : symbol) (body : lambda)]
+  [lambda-apply (applied : lambda) (applicand : lambda)])
+
+(define-type lambda-sugared
+  [lambda-sugared-id (id : symbol)]
+  [lambda-sugared-def (bound : symbol) (body : lambda-sugared)]
+  [lambda-sugared-apply (applied : lambda-sugared) (applicand : lambda-sugared)]
+  [lambda-sugared-LET (let-bindings : (listof let-binding)) (let-body : lambda-sugared)])
+
+(define-type lambda-result
+  [lambda-result-transformed (result : lambda)]
+  [lambda-result-not-transformed (result : lambda)])
+
+(define-type let-binding
+  [let-binding-data (let-bound : symbol) (let-value : lambda-sugared)])
+
+(define (parse-let-binding [s : s-expression]) : let-binding
+  (let ((let-binding (s-exp->list s)))
+    (let-binding-data (s-exp->symbol (first let-binding)) (parse-sugared (second let-binding)))))
+
+;; parse-sugared s-expression -> lambda-sugared
+;; convert a quoted s expression into the equivalent lambda-sugared form
+;; examples
+(define (parse-sugared [s : s-expression]) : lambda-sugared
+  (cond
+    [(s-exp-symbol? s) (lambda-sugared-id (s-exp->symbol s))]
+    [(s-exp-list? s)
+     (let ([sl (s-exp->list s)])
+       (cond
+         [(and (= (length sl) 3) (symbol=? (s-exp->symbol (first sl)) 'λ))
+          (lambda-sugared-def (s-exp->symbol (second sl)) (parse-sugared (third sl)))]
+         [(and (= (length sl) 3) (symbol=? (s-exp->symbol (first sl)) 'LET))
+          (lambda-sugared-LET (map parse-let-binding (s-exp->list (second sl))) (parse-sugared (third sl)))]
+         [(= (length sl) 2)
+          (lambda-sugared-apply (parse-sugared (first sl)) (parse-sugared (second sl)))]           
+         [else (error 'parse (string-append "invalid list input" (s-exp->string s)))]))]
+    [else (error 'parse (string-append "invalid input" (s-exp->string s)))]))
+
+;unparse lambda -> s-expression 
+(define (unparse [expr : lambda]) : s-expression 
+  (type-case lambda expr
+    [lambda-id (id) (symbol->s-exp id)]
+    [lambda-def (bound body) (list->s-exp (list (symbol->s-exp 'λ) (symbol->s-exp bound) (unparse body)))]
+    [lambda-apply (lhs rhs) (list->s-exp (list (unparse lhs) (unparse rhs)))]))
+
+(define (desugar-let [lb : let-binding] [body : lambda]) : lambda
+  (type-case let-binding lb
+    [let-binding-data (let-bound let-value) (lambda-apply (lambda-def let-bound body) (desugar let-value))]))
+
+(define (desugar [sugared-expr : lambda-sugared]) : lambda
+  (type-case lambda-sugared sugared-expr
+    [lambda-sugared-id (id) (lambda-id id)]
+    [lambda-sugared-def (bound body) (lambda-def bound (desugar body))]
+    [lambda-sugared-apply (lhs rhs) (lambda-apply (desugar lhs) (desugar rhs))]
+    [lambda-sugared-LET (let-bindings let-body) (foldr desugar-let (desugar let-body) let-bindings)]))
+
+(test (unparse (desugar (parse-sugared '(LET ((a b)) x)))) '((λ a x) b))
+(test (unparse (desugar (parse-sugared '(LET ((a b) (c d)) x)))) '((λ a ((λ c x) d)) b))
+(test (unparse (desugar (parse-sugared '(LET ((p q) (ADD (λ n (λ m (λ f (λ x ((m f) ((n f) x)))))))) (λ p ((ADD p)p))))))
+      '((λ p ((λ ADD (λ p ((ADD p) p))) (λ n (λ m (λ f (λ x ((m f) ((n f) x)))))))) q))
+
+
+(define (set-remove [to-remove : symbol] [set : (listof symbol)]) : (listof symbol)
+  (filter (λ (x) (not (symbol=? x to-remove))) set))
+
+(define (set-subtract [set1 : (listof symbol)][set2 : (listof symbol)]) : (listof symbol)
+  (foldr set-remove set1 set2)) 
+
+(define (set-union [set1 : (listof symbol)][set2 : (listof symbol)]) : (listof symbol)
+  (append set1 (set-subtract set2 set1)))
+
+(define (set-member [to-find : symbol] [set : (listof symbol)]) : boolean
+  (not (= (length (filter (λ (x) (symbol=? to-find x)) set)) 0)))
+
+;; *******************************
+;; Distributed new id code package
+;; *******************************
+(define (quotient [a : number] [b : number]) : number
+  (/ (- a (remainder a b)) b))
+
+(define (number->string [x : number]) : string
+  (if (zero? x) "" (string-append (number->string (quotient x 10))
+                                  (list->string (list (string-ref "0123456789" (modulo x 10)))))))
+
+(define (chop-tail [l : (listof char)]) : (listof char)
+  (if (or (empty? l) (char=? (first l) #\_ )) empty (cons (first l) (chop-tail (rest l )))))
+
+(define (clear-suffix-number [old : symbol]) : symbol
+  (string->symbol (list->string (chop-tail (string->list (symbol->string old))))))
+
+(define (add-new-suffix-number [old-chopped : symbol] [n : number]) : symbol
+  (string->symbol (string-append (string-append (symbol->string old-chopped) "_") (number->string n))))
+
+(define (new-ident-fun-maker [start : number]) : [symbol -> symbol]
+  (λ ([old : symbol]) : symbol
+    (begin
+      (set! start (+ start 1))
+      (add-new-suffix-number (clear-suffix-number old) start))))
+
+(define make-new-ident (new-ident-fun-maker 0))
+;; **************************************
+;; End of distributed new id code package
+;; **************************************
+
+(define (free-ids [expr : lambda]) : (listof symbol)
+  (type-case lambda expr
+    [lambda-id (id) (list id)]
+    [lambda-def (bound body) (set-remove bound (free-ids body))]
+    [lambda-apply (lhs rhs) (set-union (free-ids lhs) (free-ids rhs))]))
+
+(define (beta-transform [applied : lambda] [applicand : lambda]) : lambda
+  (type-case lambda applied
+    [lambda-id (id) (error 'beta-transform "applied not a def - an id")]
+    [lambda-def (bound body) (substitute applicand bound body)]
+    [lambda-apply (lhs rhs) (error 'beta-transform "applied not a def - an apply")]))
+
+(define (substitute [to-sub : lambda] [for : symbol] [in : lambda]) : lambda
+  (type-case lambda in
+    [lambda-id (id) (if (symbol=? for id) to-sub in)]
+    [lambda-apply (lhs rhs) (lambda-apply (substitute to-sub for lhs)
+                                          (substitute to-sub for rhs))]
+    [lambda-def (bound body) (if (symbol=? for bound)
+                                 in
+                                 (if (or (not (set-member for (free-ids body)))
+                                         (not (set-member bound (free-ids to-sub))))
+                                     (lambda-def bound (substitute to-sub for body))
+                                     (let ((new-sym (make-new-ident bound)))
+                                       (lambda-def new-sym
+                                                   (substitute to-sub for
+                                                               (substitute (lambda-id new-sym) bound body))))))]))
+
+
+(define (do-leftmost-beta [input : lambda]) : lambda-result
+  (type-case lambda input
+    [lambda-id (id) (lambda-result-not-transformed input)]
+    [lambda-def (bound body) (type-case lambda-result (do-leftmost-beta body)
+                               [lambda-result-transformed (result) (lambda-result-transformed (lambda-def bound result))]
+                               [lambda-result-not-transformed (result) (lambda-result-not-transformed (lambda-def bound result))])]
+    [lambda-apply (lhs rhs) (type-case lambda lhs
+                              [lambda-def (bound body) (lambda-result-transformed (beta-transform lhs rhs))]
+                              [else (type-case lambda-result (do-leftmost-beta lhs) 
+                                      [lambda-result-transformed (result) (lambda-result-transformed (lambda-apply result rhs))]
+                                      [lambda-result-not-transformed (result)
+                                                                     (type-case lambda-result (do-leftmost-beta rhs)
+                                                                       [lambda-result-transformed (rhs-result)
+                                                                                                  (lambda-result-transformed
+                                                                                                   (lambda-apply result rhs-result))]
+                                                                       [lambda-result-not-transformed (rhs-result)
+                                                                                                      (lambda-result-not-transformed
+                                                                                                       (lambda-apply result rhs-result))])])])]))
+
+
+(define (do-leftmost-betas [expr : lambda]) : lambda
+  (type-case lambda-result (do-leftmost-beta expr)
+    [lambda-result-transformed (result) (do-leftmost-betas result)]
+    [lambda-result-not-transformed (result) result]))
+
+
+(define (find-normal-form [input : lambda]) : lambda
+  (type-case lambda input
+    [lambda-id (id) input]
+    [lambda-def (bound body) (lambda-def bound (find-normal-form body))]
+    [lambda-apply (lhs rhs) (type-case lambda lhs
+                              [lambda-def (bound body) (find-normal-form (beta-transform lhs rhs))]
+                              [else (type-case lambda (find-normal-form lhs) ;; can't do this 
+                                      [lambda-def (bound body) (find-normal-form (lambda-apply (lambda-def bound body) rhs))]
+                                      [lambda-id (id) (lambda-apply (lambda-id id) (find-normal-form rhs))]
+                                      [lambda-apply (llhs lrhs) (lambda-apply (lambda-apply llhs lrhs) (find-normal-form rhs))])])]))
+
+(define (run [expr : s-expression]) : s-expression
+  (unparse (do-leftmost-betas (desugar (parse-sugared expr)))))
+
+(define predefined-lets
+  '((ZERO (λ f (λ x x)))
+   (SUCC (λ n (λ f (λ x (f ((n f) x))))))
+   (ONE (SUCC ZERO))
+   (TWO (SUCC ONE))
+   (THREE (SUCC TWO))
+   (FOUR (SUCC THREE))
+   (FIVE (SUCC FOUR))
+   (SIX (SUCC FIVE))
+   (SEVEN (SUCC SIX))
+   (EIGHT (SUCC SEVEN))
+   (NINE (SUCC EIGHT))
+   (TEN (SUCC NINE))
+   (TRUE (λ x (λ y x)))
+   (FALSE (λ x (λ y y)))
+   (ADD (λ m (m SUCC)))
+   (MUL (λ m (λ n (λ f (m (n f))))))
+   (FLIP (λ f (λ x (λ y ((f y) x)))))
+   (EXP (FLIP (λ x x))) ;; params "backwards" until FLIP
+   (CONS (λ a (λ b (λ f ((f a) b)))))
+   (FIRST (λ c (c (λ x (λ y x)))))
+   (REST (λ c (c (λ x (λ y y)))))
+   (EMPTY (λ f TRUE))
+   (EMPTY? (λ c (c (λ x (λ y FALSE)))))
+   (PREDHELPER (λ c ((CONS (REST c)) (SUCC (REST c)))))
+   (PRED (λ n (FIRST ((n PREDHELPER) ((CONS ZERO) ZERO)))))
+   (SUB (FLIP (λ m (m PRED)))) ;; params "backwards" until FLIP
+   (ZERO? (λ n ((n (λ a FALSE)) TRUE)))
+   (NTH (λ l (λ n (FIRST ((n REST) l)))))
+   (NUMBERS ((CONS sıfır)
+             ((CONS bir)
+              ((CONS iki)
+               ((CONS üç)
+                ((CONS dört)
+                 ((CONS beş)
+                  ((CONS altı)
+                   ((CONS yedi)
+                    ((CONS sekiz)
+                     ((CONS dokuz) EMPTY))))))))))) 
+   (DECIMAL (NTH NUMBERS))
+   (Y (λ f ((λ x (f (x x))) (λ x (f (x x))))))
+   (FOLD (Y (λ fold (λ comb (λ nv (λ ls (((EMPTY? ls) nv) ((comb (FIRST ls))
+                                                           (((fold comb) nv) (REST ls))))))))))
+   (MAP (λ f (λ l (((FOLD (λ lv (λ rv ((CONS (f lv)) rv)))) EMPTY) l))))
+   (SHOWNUMLIST (λ l (((FOLD (λ lv (λ rv (lv rv)))) end) ((MAP DECIMAL) l)))) 
+   (FAC (Y (λ fac (λ n (((ZERO? n) ONE) ((MUL n) (fac (PRED n)))))))) 
+   ))
+
+
+(test (run '(LET ((a b) (c d)) (x x))) '(x x))
+(test (run '(LET ((a b) (c d)) (a c))) '(b d))
+
+(run `(LET ,predefined-lets (DECIMAL ((EXP THREE) TWO))))
+(run `(LET ,predefined-lets (DECIMAL (PRED TEN))))
+(run `(LET ,predefined-lets (DECIMAL (FAC THREE))))
+
+(run `(LET ,predefined-lets (EMPTY? EMPTY)))
+(run
+ `(LET ,predefined-lets
+       (EMPTY? ((CONS ONE) EMPTY))))
+
+(run
+ `(LET ,predefined-lets
+       (((FOLD ADD) ZERO) ((CONS THREE) ((CONS TWO) ((CONS THREE) EMPTY))))))
+(run
+ `(LET ,predefined-lets
+       (SHOWNUMLIST ((CONS ONE) ((CONS TWO) ((CONS THREE) EMPTY))))))
+
+

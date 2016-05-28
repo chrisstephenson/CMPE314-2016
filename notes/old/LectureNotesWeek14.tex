@@ -1,0 +1,82 @@
+\documentclass{article}
+\usepackage[margin=2cm,bottom=2cm]{geometry}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\usepackage{MnSymbol}
+\usepackage{soul}
+\usepackage{amsmath}
+
+\begin{document}
+\title{COMP/CMPE 314 - Principles of Programming Languages - Notes}
+\author{Chris Stephenson, Istanbul Bilgi University, Department of Mathematics, and course students}
+\maketitle
+
+\section*{Week14}
+\begin{flushleft}
+ \begin{verbatim}
+  (LET ((MUL (lambda m (lambda m (lambda f (lambda x (m (n x)))))))) body)
+  
+  (LET ((id1 bv1) (id2 bv2) ...) <body>)
+  
+  (LET (id bv) <body>) --> ((lambda id <body>) bv)
+  
+  (LET (id1 bv1) (LET (id2 bv2) (LET ...) <body>)
+ \end{verbatim}
+ this is a \underline{fold.}\\
+ \bigskip
+ \underline{\textbf{Quiz question answer:}}\\
+ \begin{verbatim}
+  (LET ((a (b x)) (b c)) (lambda b (c a)))
+  
+  (LET ((a (b x))) (LET ((b c)) (lambda b (c a))))
+  
+  ((lambda a ((lambda b (lambda b (c a))) c))) (b x)))
+ \end{verbatim}
+ \bigskip
+ To get a \underline{practical} lambda calculus interpreter we need to always do the \underline{leftmost} $\beta$ transformation.\\
+ \underline{Example:} Y combinator will loop if you don't always do the leftmost.\\
+ \bigskip
+ Consider ($\Lambda_1$ $\Lambda_2$) $\Lambda_1$ is not a def \\
+ So we transform $\Lambda_1$ - if after \underline{any} transformation $\Lambda_1$ becomes a def we need to apply it immediately.
+\end{flushleft}
+
+\subsection*{Mutation + Sequence}
+\begin{flushleft}
+ \begin{verbatim}
+  a = b;                           c = a;
+               not equal to        
+  c = a;                           a = b;
+ \end{verbatim}
+ \underline{Sequence matters!}\\
+ \bigskip
+ in Racket;\\
+ \begin{verbatim}
+  (begin
+      a1
+      a2
+      a3
+      a4)
+ \end{verbatim}
+ memory is a \underline{key-value} store\\
+ make every value a pair \underline{mem x value}\\
+ \verb|(a4 (a3 (a2 (a1 x))))|
+ \bigskip
+ A general solver for polynomial equations of this form\\
+ $a_0 + a_1x + a_2x^2 + ... + a_nx^n = 0$\\
+ Present polynomial as array of numbers\\
+ $(1 + 2x + 3x^2) (4 + 2x) = 4 + 10x + 16x^2 + 6x^3$\\
+ evaluate $a_0 + a_1x + ... + a_nx^n = a_0 + x(a_1 + x(a_2 ... a_n)))))$\\
+ $1 + 2x + 3x^2 + 4x^3$  , x=2 $\rightarrow$ 49\\
+ Make the polynomial whose roots are $r_0, r_1, r_2, ...$\\
+ $(x - r_0) (x - r_1) (x - r_2) ... (x - r_n)$\\
+ $(-r_0 + x) (-r_1 + x) (-r_2 + x) ... (-r_n + x)$\\
+ $(x - 1) (x - 2) (x - 3) (x - 4)$\\
+ $x^4 - 10x^3 + 35x^2 - 50 + 24$\\
+ \underline{Need to differentiate a polynomial}\\
+ $a_0 + a_1x + a_2x^2 ... $ $\rightarrow$ $a_1 + 2a_2x + 3a_3x^2 + ... + na_nx^{n-1}$
+\end{flushleft}
+\end{document}

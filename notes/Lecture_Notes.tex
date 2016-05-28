@@ -14,6 +14,7 @@
 \usepackage{amssymb}
 \usepackage{tcolorbox}
 \usepackage{alltt}
+\usepackage{listings}
 
 
 \begin{document}
@@ -1421,9 +1422,176 @@ $ ({a}_{0} + {a}_{1}x + {a}_{2}{x}^{2} + \ldots + {a}_{n}{x}^{n})$ $\leftarrow$ 
 \bigskip
 $[{a}_{0}, {a}_{1} \ldots {a}_{n}]$ + $[{b}_{0}, {b}_{1} \ldots {b}_{m}]$ = $[{a}_{0} + {b}_{0}, {a}_{1} + {b}_{1} \ldots]$\\
 \bigskip
-$[{a}_{0}, {a}_{1} \ldots {a}_{n}]$ * $[{b}_{0}, {b}_{1} \ldots {b}_{m}]$ = $[{a}_{0} * {b}_{0}, {a}_{1} * {b}_{0} + {a}_{0} * {b}_{1} \ldots {a}_{m} * {b}_{n}]$
+$[{a}_{0}, {a}_{1} \ldots {a}_{n}]$ * $[{b}_{0}, {b}_{1} \ldots {b}_{m}]$ = $[{a}_{0} * {b}_{0}, {a}_{1} * {b}_{0} + {a}_{0} * {b}_{1} \ldots {a}_{m} * {b}_{n}]$\\
+\pagebreak
+\textcolor{blue}{\textbf{{\huge Week 13 Lecture Notes}}}
+\section*{Memory Management}
+\begin{flushleft}
+\verb|int[] a = new int[n]; // write n instead of value such 100 | 
+\end{flushleft}
+\bigskip
+If we have \underline{manual} memory management:
+\begin{flushleft}
+In C/C++ we have \underline{malloc} and \underline{free}.\\
+\bigskip
+\begin{itemize}
+\item[(a)] We can have a memory leak. (forget to free)
+\item[(b)] We can have a catastrophe. (free memory still in use)
+\end{itemize}
+\bigskip
+Even this is not cheap.\\
+Especially if we think about \underline{fragmentation}.\\
+\vspace*{1cm}
+\framebox(200,20){\huge $|$ free $|$      $|$ free $|$      $|$ free $|$}\\
+\vspace*{1cm}
+Manual is not a good idea. - Leads to problems in practice.\\
+\vspace*{0.1cm}
+We want an automatic systems.\\
+\vspace*{0.1cm}
+Needs to detect when allocated memory can be handed back.
+\bigskip
+\begin{itemize}
+  \item We want a system that is \underline{sound}. (does not hand back free memory)
+  \item We want a system that is \underline{complete}. (hands back all free memory)
+\end{itemize}
+\end{flushleft}
+\vspace*{1cm}
+\subsection*{\underline{Solution 1} (PHP, Swift)}
+\subsubsection*{\underline{Reference Counts}}
+ \begin{flushleft}
+Increase for each new reference to a piece of memory,\\
+\vspace*{0.1cm}
+Because when a reference is deleted or overwritten.\\
+\vspace*{0.1cm}
+When the count drops to \underline{zero} hand back the memory.
+\bigskip
+  \begin{verbatim}
+   class X {
+      .. X a = this;    <-- Circular Reference // cause a memory leak
+   }
+\end{verbatim}
+\end{flushleft}
+\subsection*{\underline{Solution 2} (Java, C\#, Racket, Haskell)}
+\subsubsection*{\underline{Garbage Collection}}
+\begin{flushleft}
+\vspace*{0.4cm}
+\framebox(100,100){\huge $\blacksquare$ $\blacksquare$}\\
+\vspace*{0.8cm}
+Find the memory in use starting from base references,\\
+\vspace*{0.1cm}
+Mark the memory in use,\\
+\vspace*{0.1cm}
+Free all the rest.\\
+\vspace*{1cm}
+
+\textbf{\underline {Cheney} (1970)}\\
+\vspace*{0.4cm}
+Divide memory into two,\\
+\vspace*{0.5cm}
+\framebox(100,100){\huge $\blacksquare$ $\blacksquare$ $\blacksquare$  $\rightarrow$}\framebox(100,100){\huge \boxed{}\boxed{}\boxed{}}\\
+\hspace*{1.5cm} A\hspace*{3cm} B\\
+\vspace*{0.8cm}
+Use A,\\
+\vspace*{0.1cm}
+When A is "exhausted"\\
+\vspace*{0.1cm}
+Copy referenced memory from A to B\\
+\vspace*{0.1cm}
+Mark the old copies with ''broken hearts"\\
+\vspace*{0.8cm}
+\textbf{Exploit different kinds of memory allocation}\\
+\begin{itemize}
+ \item[-] Short term allocation
+ \item[-]Long term allocation
+\end{itemize}
+
+\subsection*{\underline{Generational Garbage Collection}}
+\vspace*{0.4cm}
+\begin{verbatim}
+ (define (substitute [to-sub : lambda] [for : symbol] [in : lambda]) : lambda
+      (type-case lambda in
+           [lambda-id (id) (if (symbol=? for id) to-sub in)]
+           [lambda-apply (lhs rhs) (lambda-apply (substitute to-sub for lhs)
+                                                 (substitute to-sub for rhs))]
+           [lambda-def (bound body) (if (symbol=? for bound) in
+                                    (if (or (not (set-member for (free-identifiers body)))
+                                            (not (set-member bound (free-identifiers to-sub)))
+                                    (lambda-def bound (substitute to-sub in body)))))]
+\end{verbatim}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}\\
+\vspace*{1.5cm}
+\textcolor{blue}{\textbf{{\huge Week 14 Lecture Notes}}}
+
+\section*{Last Lecture}
+\begin{flushleft}
+\vspace*{0.3cm}
+(LET ((MUL ($\lambda$ m ($\lambda$ m ($\lambda$ f ($\lambda$ x (m (n x)))))))) body)\\
+\vspace*{0.2cm}
+(LET \underline{((id1 bv1) (id2 bv2)} ..) $<$ body $>$))\\
+\vspace*{0.2cm}
+(LET (id bv) $<$ body $>$) $\rightarrow$ (($\Lambda$ id $<$ body $>$) bv)\\
+\vspace*{0.2cm}
+(LET (id1 bv1) (LET (id2 bv2) (LET..) $<$ body $>$)) // this is fold\\
+\vspace*{0.8cm}
+\pagebreak
+\textbf{Quiz last question result}\\
+\vspace*{0.2cm}
+(LET ((a (b x )) (b c)) ($\lambda$ b (c a)))\\
+\hspace*{0.5cm}$\downarrow$\hspace*{2cm}$\searrow$\\
+(LET ((\textcolor{red}{a} (\textcolor{blue}{b} x))) (LET ((b c)) ($\lambda$ b (c a))))))\\
+\vspace*{0.2cm}
+(($\lambda$ \textcolor{red}{a} (($\lambda$ b ($\lambda$ b (c a)) c))) (\textcolor{blue}{b} x)))\\
+\vspace*{1.5cm}
+To get a \underline{practical} lambda calculus interpreter we need to always do the \underline{leftmost} $\beta$ transformation.\\
+\bigskip
+\textbf{Example} Y combinator will loop if you don't always do the leftmost\\
+\vspace*{0.3cm}
+Consider ($\Lambda_{1}$ $\Lambda_{2}$) // $\Lambda_{1}$ is not a def\\
+\vspace*{0.3cm}
+So we transform $\Lambda_{1}$ - if after \underline{any} transformation $\Lambda_{1}$ becomes a def we need to apply it immediately.
+\end{flushleft}
+
+\vspace*{1cm}
+\subsection*{\underline{Mutation + sequence}}
+\begin{lstlisting}[mathescape]
+  a=b;       c=a;
+	 $\not\equiv$          $\Rightarrow$ Sequence matters (purelly functional data structures Chris Okosaki)
+  c=a;       a=b;
+                      Memory is a key value store
+                      
+ (begin  a1
+         a2      $\Rightarrow$ Make every value a pair Mem x value (a4 (a3 (a2 (a1 x))))
+         a3
+         a4 ) $\rightarrow$ mutation\\
+\end{lstlisting}
+\vspace*{0.7cm}
+ \begin{flushleft}
+A general solver for polynomial equations of this form $a_{0}$ + $a_{1}x$ + $a_{2}x^{2}$ + .. + $a_{n}x^{n}$ = 0 represent polynomial as array of number.\\
+\vspace*{0.3cm}
+\hspace*{1.5cm}(1 + 2x + $3x^{2}$) (4 + 2x) = 4 + 10x + $16x^{2}$ + $6x^{3}$\\
+\vspace*{0.3cm}
+evaluate $a_{0}$ + $a_{1}x$ + .. + $a_{n}x^{n}$ = $a_{0}$ + x($a_{1}$ + x($a_{2}$ .. n)))))\\
+\vspace*{0.3cm}
+\hspace*{1.5cm} 1 + 2x + $3x^{2}$ + $4x^{3}$ , x=2 $\rightarrow$ 49\\
+Make a polynomial where roots are $r_{0}$ $r_{1}$ $r_{2} ...$\\
+\vspace*{0.4cm}
+\hspace*{0.5cm} (x - $r_{0}$) (x - $r_{1}$) (x - $r_{2}$) ... (x - $r_{n}$)\\
+\vspace*{0.2cm}
+\hspace*{0.5cm} (-$r_{0}$ + x) (-$r_{1}$ + x) (-$r_{2}$ + x) ... (-$r_{n}$ + x)\\
+\vspace*{0.6cm}
+\hspace*{0.5cm} (x - 1) (x - 2) (x - 3) (x - 4)\\
+\vspace*{0.2cm}
+\hspace*{0.5cm} $x^{4}$ - $10x^{3}$ + $35x^{2}$ - 50  + 24\\
+\vspace*{1cm}
+\underline{\textbf{Need to differentiate a polynomial}}\\
+\vspace*{0.4cm}
+\hspace*{0.3cm} $a_{0}$ + $a_{1}x$ + $a_{2}x^2$ ... $\rightarrow$  $a_{1}$ + $2a_{2}x$ + $3a_{3}x^2$ + $na_{n}x^{n-1}$
+  
 \end{flushleft}
 \end{flushleft}
 \end{flushleft}
 \end{flushleft}
+\end{flushleft}
+\end{flushleft}
+
 \end{document}
